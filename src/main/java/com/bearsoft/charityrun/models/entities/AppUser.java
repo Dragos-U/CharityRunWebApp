@@ -27,6 +27,7 @@ public class AppUser {
 
     @Column(nullable = false)
     private String email;
+    private String password;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id")

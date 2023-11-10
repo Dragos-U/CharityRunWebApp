@@ -1,11 +1,9 @@
 package com.bearsoft.charityrun.models.dtos;
 
 import com.bearsoft.charityrun.models.entities.Address;
-import com.bearsoft.charityrun.models.entities.Registration;
 import com.bearsoft.charityrun.models.entities.Role;
 import lombok.*;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -15,11 +13,10 @@ import java.util.Set;
 @Builder
 public class AppUserDTO {
 
-    private Long id;
     private String firstName;
     private String lastName;
     private String email;
+    private String password;
     private Address address;
-    private Set<Registration> registrations;
-    private Set<Role> roles = new HashSet<>();
+    private Set<Role> roles;
 }
