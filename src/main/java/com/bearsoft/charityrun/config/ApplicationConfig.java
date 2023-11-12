@@ -1,7 +1,6 @@
 package com.bearsoft.charityrun.config;
 
-import com.bearsoft.charityrun.security.PassEncoder;
-import com.bearsoft.charityrun.services.AppUserService;
+import com.bearsoft.charityrun.config.security.PassEncoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,18 +8,19 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfig {
 
-    private final AppUserService appUserService;
+    private final UserDetailsService userDetailsService;
     private final PassEncoder passwordEncoder;
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(appUserService);
+        authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder.passwordEncoder());
         return authProvider;
     }

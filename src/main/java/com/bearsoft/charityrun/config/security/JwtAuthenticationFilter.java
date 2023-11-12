@@ -1,8 +1,8 @@
-package com.bearsoft.charityrun.security;
+package com.bearsoft.charityrun.config.security;
 
 import com.bearsoft.charityrun.models.SecurityAppUser;
 import com.bearsoft.charityrun.repositories.TokenRepository;
-import com.bearsoft.charityrun.services.JwtFilterService;
+import com.bearsoft.charityrun.services.security.JwtFilterService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,9 +23,9 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtFilterService jwtFilterService;
-    private final UserDetailsService appUserService;    // can ? I can use UserDetails interface
     private final TokenRepository tokenRepository;
+    private final JwtFilterService jwtFilterService;
+    private final UserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(
@@ -47,7 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         jwt = authHeader.substring(bearer.length());
         userEmail = jwtFilterService.extractUsername(jwt);
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.appUserService.loadUserByUsername(userEmail);
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
             var isTokenValid = tokenRepository.findByToken(jwt)
                     .map(t -> !t.isExpired() && !t.isRevoked())

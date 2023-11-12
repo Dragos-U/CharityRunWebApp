@@ -18,8 +18,8 @@ public class RefreshToken {
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name="user_id")
+    @ManyToOne
+    @JoinColumn(name="app_user_id")
     private AppUser appUser;
 
     @Column(nullable = false, unique = true)
@@ -27,5 +27,4 @@ public class RefreshToken {
 
     @Column(name= "expiry_date", nullable = false)
     private Instant expiryDate;
-
 }

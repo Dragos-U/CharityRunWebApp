@@ -1,4 +1,4 @@
-package com.bearsoft.charityrun.services;
+package com.bearsoft.charityrun.services.security;
 
 import com.bearsoft.charityrun.repositories.TokenRepository;
 import jakarta.servlet.http.HttpServletRequest;

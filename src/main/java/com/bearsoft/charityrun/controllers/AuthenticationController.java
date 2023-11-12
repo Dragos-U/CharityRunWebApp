@@ -3,10 +3,14 @@ package com.bearsoft.charityrun.controllers;
 import com.bearsoft.charityrun.models.dtos.AuthenticationRequestDTO;
 import com.bearsoft.charityrun.models.dtos.AuthenticationResponseDTO;
 import com.bearsoft.charityrun.models.dtos.AppUserDTO;
-import com.bearsoft.charityrun.services.AuthenticationService;
+import com.bearsoft.charityrun.services.security.AuthenticationService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,8 +29,10 @@ public class AuthenticationController {
         return ResponseEntity.ok(authenticationService.authenticateAppUser(authRequestDTO));
     }
 
-    @GetMapping("/test-authentication")
-    public ResponseEntity<String> sayHello() {
-        return ResponseEntity.ok("Hello from secured endpoint");
+    @PostMapping("/refresh-token")
+    public void refreshToken(
+            HttpServletRequest request,
+            HttpServletResponse response) throws IOException {
+        authenticationService.refreshToken(request, response);
     }
 }

@@ -15,7 +15,7 @@ public class AppUserService implements UserDetailsService {
     private final AppUserRepository appUserRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public SecurityAppUser loadUserByUsername(String email) throws UsernameNotFoundException {
         var appUser = appUserRepository.findAppUsersByEmail(email);
 
         return appUser.map(SecurityAppUser::new)

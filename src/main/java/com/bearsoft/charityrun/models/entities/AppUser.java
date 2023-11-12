@@ -37,7 +37,7 @@ public class AppUser {
     @OneToMany(mappedBy = "appUser", cascade = CascadeType.ALL)
     private Set<Registration> registrations;
 
-    @OneToMany(mappedBy = "appUser" ) //?
+    @OneToMany(mappedBy = "appUser" )
     private List<Token> tokens;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)

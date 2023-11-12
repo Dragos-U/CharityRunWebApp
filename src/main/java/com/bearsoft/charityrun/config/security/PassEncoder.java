@@ -1,4 +1,4 @@
-package com.bearsoft.charityrun.security;
+package com.bearsoft.charityrun.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
