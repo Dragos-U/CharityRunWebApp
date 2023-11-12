@@ -6,10 +6,7 @@ import lombok.*;
 
 import java.util.Set;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@Data
 @Builder
 public class AppUserDTO {
 
