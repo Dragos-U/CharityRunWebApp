@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +40,9 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final JwtFilterService jwtFilterService;
     private final PasswordEncoder passwordEncoder;
+
+    private static final String BEARER_PREFIX = "Bearer ";
+    private static final String AUTHORIZATION_HEADER  = "Authorization";
 
     @Value("${application.security.jwt.refresh-token.expiration}")
     private long refreshExpiration;
@@ -121,33 +125,48 @@ public class AuthenticationService {
     public void refreshToken(
             HttpServletRequest request,
             HttpServletResponse response) throws IOException {
-        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        final String refreshToken;
-        final String userEmail;
-        final String bearer = "Bearer ";
 
-        if (authHeader == null || !authHeader.startsWith(bearer)) {
+        String refreshToken = extractTokenFromRequest(request, BEARER_PREFIX);
+        if (refreshToken == null) {
             return;
         }
 
-        refreshToken = authHeader.substring(bearer.length());
-        userEmail = jwtFilterService.extractUsername(refreshToken);
-        if (userEmail != null) {
-            var appUser = appUserRepository.findAppUsersByEmail(userEmail)
-                    .orElseThrow();
-            SecurityAppUser securityAppUser = new SecurityAppUser(appUser);
+        String userEmail = jwtFilterService.extractUsername(refreshToken);
+        Optional<AppUser> appUserOptional = appUserRepository.findAppUsersByEmail(userEmail);
 
-            if (jwtFilterService.isTokenValid(refreshToken, securityAppUser)) {
-                var accessToken = jwtFilterService.generateToken(securityAppUser);
-                revokeAllAppUserTokens(appUser);
-                saveJwtTokenToRepo(appUser, accessToken);
-
-                var authResponse = AuthenticationResponseDTO.builder()
-                        .accessToken(accessToken)
-                        .refreshToken(refreshToken)
-                        .build();
-                new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
-            }
+        if (appUserOptional.isPresent() && isTokenValidForUser(refreshToken, appUserOptional.get())) {
+            SecurityAppUser securityAppUser = new SecurityAppUser(appUserOptional.get());
+            String accessToken = jwtFilterService.generateToken(securityAppUser);
+            updateAndSaveTokens(appUserOptional.get(), accessToken, refreshToken, response);
         }
+    }
+
+    private String extractTokenFromRequest(
+            HttpServletRequest request,
+            String tokenPrefix) {
+        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (authHeader != null && authHeader.startsWith(tokenPrefix)) {
+            return authHeader.substring(tokenPrefix.length());
+        }
+        return null;
+    }
+
+    private boolean isTokenValidForUser(String token, AppUser appUser) {
+        SecurityAppUser securityAppUser = new SecurityAppUser(appUser);
+        return jwtFilterService.isTokenValid(token, securityAppUser);
+    }
+
+    private void updateAndSaveTokens(AppUser appUser, String accessToken, String refreshToken, HttpServletResponse response) throws IOException {
+        revokeAllAppUserTokens(appUser);
+        saveJwtTokenToRepo(appUser, accessToken);
+        sendAuthenticationResponse(accessToken, refreshToken, response);
+    }
+
+    private void sendAuthenticationResponse(String accessToken, String refreshToken, HttpServletResponse response) throws IOException {
+        var authResponse = AuthenticationResponseDTO.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+        new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
     }
 }

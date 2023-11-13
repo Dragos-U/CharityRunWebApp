@@ -21,10 +21,10 @@ public class AppUserController {
     private final AppUserService appUserService;
 
     @PatchMapping
-    public ResponseEntity<?> changePassword(
+    public ResponseEntity<String> changePassword(
             @RequestBody ChangePasswordDTO changePasswordDTO,
             Principal connectedAppUser){
         appUserService.changePassword(changePasswordDTO, connectedAppUser);
-        return ResponseEntity.accepted().build();
+        return ResponseEntity.status(202).body("Your password was changed.");
     }
 }

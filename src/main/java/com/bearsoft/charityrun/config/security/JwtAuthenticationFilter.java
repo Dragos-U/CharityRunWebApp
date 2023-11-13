@@ -27,42 +27,54 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtFilterService jwtFilterService;
     private final UserDetailsService userDetailsService;
 
+    private static final String BEARER_PREFIX = "Bearer ";
+    private static final String AUTHORIZATION_HEADER  = "Authorization";
+
     @Override
     protected void doFilterInternal(
-            @NonNull HttpServletRequest request,       // our intercepted request from which we can extract data
-            @NonNull HttpServletResponse response,     // our response to which we can provide data with oncePerRequestFilter
-            @NonNull FilterChain filterChain)          // the filter chain, list of the other filters we need to execute.
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
-        final String authHeader = request.getHeader("Authorization");
-        final String jwt;
-        final String userEmail;
-        final String bearer = "Bearer ";
-
-        if (authHeader == null || !authHeader.startsWith(bearer)) {
-            filterChain.doFilter(request, response); // pass the request and response to the next filter
+        final String authHeader = request.getHeader(AUTHORIZATION_HEADER);
+        if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
+            filterChain.doFilter(request, response);
             return;
         }
 
-        jwt = authHeader.substring(bearer.length());
-        userEmail = jwtFilterService.extractUsername(jwt);
+        String jwt = authHeader.substring(BEARER_PREFIX.length());
+        String userEmail = jwtFilterService.extractUsername(jwt);
+
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-
-            var isTokenValid = tokenRepository.findByToken(jwt)
-                    .map(t -> !t.isExpired() && !t.isRevoked())
-                    .orElse(false);
-
-            if (jwtFilterService.isTokenValid(jwt, (SecurityAppUser) userDetails) && isTokenValid) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities());
-                authToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-            }
+            authenticateUser(request, userEmail, jwt);
         }
-        filterChain.doFilter(request, response); // pass the hand to our next filter
+
+        filterChain.doFilter(request, response);
+    }
+
+    private void authenticateUser(
+            HttpServletRequest request,
+            String userEmail,
+            String jwt) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
+        if (isJwtValid(jwt, userDetails)) {
+            setAuthenticationToken(request, userDetails);
+        }
+    }
+
+    private boolean isJwtValid(String jwt, UserDetails userDetails) {
+        boolean tokenExists = tokenRepository.findByToken(jwt)
+                .map(t -> !t.isExpired() && !t.isRevoked())
+                .orElse(false);
+
+        return jwtFilterService.isTokenValid(jwt, (SecurityAppUser) userDetails) && tokenExists;
+    }
+
+    private void setAuthenticationToken(HttpServletRequest request, UserDetails userDetails) {
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                userDetails, null, userDetails.getAuthorities());
+        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authToken);
     }
 }

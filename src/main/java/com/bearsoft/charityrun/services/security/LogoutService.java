@@ -18,7 +18,7 @@ public class LogoutService implements LogoutHandler {
     public void logout(HttpServletRequest request,
                        HttpServletResponse response,
                        Authentication authentication) {
-        // we want to invalidate the token. get the token from the request,
+
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String bearer = "Bearer ";

@@ -5,10 +5,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import com.bearsoft.charityrun.models.SecurityAppUser;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -54,6 +52,7 @@ public class JwtFilterService {
             Map<String, Object> extraClaims,
             SecurityAppUser securityAppUser,
             long expiration) {
+
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
@@ -77,8 +76,6 @@ public class JwtFilterService {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    // when we try to decode a token we need a signing key.
-    // sigining key - secret used to sign the token.
     private Claims extractAllClaims(String token) {
         return Jwts
                 .parserBuilder()

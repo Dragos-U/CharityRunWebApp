@@ -2,7 +2,6 @@ package com.bearsoft.charityrun.services;
 
 import com.bearsoft.charityrun.models.SecurityAppUser;
 import com.bearsoft.charityrun.models.dtos.ChangePasswordDTO;
-import com.bearsoft.charityrun.models.entities.AppUser;
 import com.bearsoft.charityrun.repositories.AppUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,7 +32,7 @@ public class AppUserService implements UserDetailsService {
         var appUser = securityAppUser.getAppUser();
 
         if (!passwordEncoder.matches(changePasswordDTO.getCurrentPassword(), appUser.getPassword())){
-            throw new IllegalStateException(("Wring password"));
+            throw new IllegalStateException(("Wrong password"));
         }
 
         if(!changePasswordDTO.getNewPassword().equals(changePasswordDTO.getConfirmationPassword())){
