@@ -4,14 +4,15 @@ import com.bearsoft.charityrun.models.entities.AppUser;
 import com.bearsoft.charityrun.models.entities.Role;
 import com.bearsoft.charityrun.models.enums.RoleType;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
+@Getter
 @AllArgsConstructor
 public class SecurityAppUser implements UserDetails {
 
