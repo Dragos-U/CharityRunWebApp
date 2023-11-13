@@ -1,6 +1,5 @@
 package com.bearsoft.charityrun.models.entities;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,11 +35,9 @@ public class AppUser {
     private Address address;
 
     @OneToMany(mappedBy = "appUser", cascade = CascadeType.ALL)
-    @JsonManagedReference
     private Set<Registration> registrations;
 
     @OneToMany(mappedBy = "appUser" )
-    @JsonManagedReference
     private List<Token> tokens;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)

@@ -1,7 +1,6 @@
 package com.bearsoft.charityrun.models.entities;
 
 import com.bearsoft.charityrun.models.enums.CourseType;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,7 +26,6 @@ public class Course {
     private LocalDateTime startTime;
 
     @OneToMany(mappedBy = "course")
-    @JsonManagedReference
     private Set<Registration> registrations;
 
     @ManyToOne
