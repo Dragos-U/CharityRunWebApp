@@ -1,5 +1,6 @@
 package com.bearsoft.charityrun.models.entities;
 
+import com.bearsoft.charityrun.models.enums.RoleType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,7 +18,9 @@ public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
+
+    @Enumerated(EnumType.STRING)
+    private RoleType roleType;
 
     @ManyToMany(mappedBy = "roles")
     private Set<AppUser> appUsers = new HashSet<>();

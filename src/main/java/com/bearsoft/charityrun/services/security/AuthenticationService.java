@@ -8,6 +8,7 @@ import com.bearsoft.charityrun.models.entities.AppUser;
 import com.bearsoft.charityrun.models.entities.RefreshToken;
 import com.bearsoft.charityrun.models.entities.Role;
 import com.bearsoft.charityrun.models.entities.Token;
+import com.bearsoft.charityrun.models.enums.RoleType;
 import com.bearsoft.charityrun.models.enums.TokenType;
 import com.bearsoft.charityrun.repositories.AppUserRepository;
 import com.bearsoft.charityrun.repositories.RefreshTokenRepository;
@@ -52,14 +53,15 @@ public class AuthenticationService {
                 .lastName(appUserDTO.getLastName())
                 .email(appUserDTO.getEmail())
                 .password(passwordEncoder.encode(appUserDTO.getPassword()))
-                .roles(new HashSet<>(List.of(Role.builder().name("USER").build())))
+                .roles(new HashSet<>(List.of(Role.builder().roleType(RoleType.ROLE_USER).build())))
                 .address(appUserDTO.getAddress())
                 .build();
         appUserRepository.save(appUser);
-        SecurityAppUser securityAppUser = new SecurityAppUser(appUser);
 
+        SecurityAppUser securityAppUser = new SecurityAppUser(appUser);
         var jwtToken = jwtFilterService.generateToken(securityAppUser);
         var refreshToken = jwtFilterService.generateRefreshToken(securityAppUser);
+
         saveJwtTokenToRepo(appUser, jwtToken);
         saveRefreshTokenToRepo(appUser, refreshToken);
 
@@ -144,12 +146,6 @@ public class AuthenticationService {
                 revokeAllAppUserTokens(appUser);
                 saveJwtTokenToRepo(appUser, accessToken);
 
-//            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-//
-//            if (jwtFilterService.isTokenValid(refreshToken, userDetails)) {
-//                var accessToken = jwtFilterService.generateToken(userDetails);
-//                revokeAllAppUserTokens(userDetails);
-//                saveJwtTokenToRepo(userDetails, accessToken);
                 var authResponse = AuthenticationResponseDTO.builder()
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
