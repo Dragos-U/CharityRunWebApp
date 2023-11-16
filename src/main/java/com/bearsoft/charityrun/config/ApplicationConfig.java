@@ -1,6 +1,6 @@
 package com.bearsoft.charityrun.config;
 
-import com.bearsoft.charityrun.config.security.PassEncoder;
+import com.bearsoft.charityrun.config.security.PassEncoderConfig;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +15,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 public class ApplicationConfig {
 
     private final UserDetailsService userDetailsService;
-    private final PassEncoder passwordEncoder;
+    private final PassEncoderConfig passwordEncoder;
 
     @Bean
     public AuthenticationProvider authenticationProvider() {

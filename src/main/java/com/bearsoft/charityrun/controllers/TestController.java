@@ -11,6 +11,7 @@ public class TestController {
 
     @GetMapping("/test-end-point")
     public ResponseEntity<String> sayHello() {
-        return ResponseEntity.ok("You gained access to a secured endpoint");
+        return ResponseEntity.ok("You are logged in.");
+        // please login or register
     }
 }

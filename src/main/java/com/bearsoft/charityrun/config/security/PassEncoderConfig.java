@@ -6,7 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PassEncoder {
+public class PassEncoderConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder(){

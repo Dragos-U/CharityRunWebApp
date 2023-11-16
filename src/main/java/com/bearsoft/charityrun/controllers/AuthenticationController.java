@@ -22,6 +22,7 @@ public class AuthenticationController {
     @PostMapping("/registration")
     public ResponseEntity<AuthenticationResponseDTO> register(@RequestBody AppUserDTO appUserDTO){
         return ResponseEntity.ok(authenticationService.registerAppUser(appUserDTO));
+        //return ResponseEntity.status(HttpStatus.CREATED).body(organizerService.createOrganizer(organizerDTO));
     }
 
     @PostMapping("/login")

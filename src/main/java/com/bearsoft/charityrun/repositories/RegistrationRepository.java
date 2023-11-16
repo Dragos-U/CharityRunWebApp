@@ -1,7 +1,7 @@
 package com.bearsoft.charityrun.repositories;
 
-import com.bearsoft.charityrun.models.entities.Registration;
+import com.bearsoft.charityrun.models.entities.CourseRegistration;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface RegistrationRepository extends JpaRepository<Registration, Long> {
+public interface RegistrationRepository extends JpaRepository<CourseRegistration, Long> {
 }

@@ -1,33 +1,43 @@
 package com.bearsoft.charityrun.controllers;
 
+import com.bearsoft.charityrun.models.dtos.ChangePasswordDTO;
+import com.bearsoft.charityrun.services.AppUserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @RestController
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 @RequestMapping("/api/v1/admin")
+@RequiredArgsConstructor
 public class AdminController {
 
+    private final AppUserService appUserService;
+
+    @PatchMapping
+    public ResponseEntity<String> changePassword(
+            @RequestBody ChangePasswordDTO changePasswordDTO,
+            Principal connectedAppUser){
+        appUserService.changePassword(changePasswordDTO, connectedAppUser);
+        return ResponseEntity.status(202).body("Your password was changed.");
+    }
     @GetMapping
-    public String get(){
-        return "GET : admin controller";
+    public String retrieveAllUsers(){
+        return "Users";
     }
 
-    @PostMapping
-    public String post(){
-        return "POST : admin controller";
+    @GetMapping("/users/{userID}")
+    public String getUserDetails(@PathVariable Long userID){
+        return "User details";
     }
 
-    @PutMapping
-    @PreAuthorize("hasAuthority('admin:update')")
-    public String put(){
-        return "PUT : admin controller";
-    }
-
-    @DeleteMapping
+    @DeleteMapping("/users/{userID}")
     @PreAuthorize("hasAuthority('admin:delete')")
-    public String delete(){
-        return "DELETE : admin controller";
+    public String deleteUser(@PathVariable Long userID){
+        return "Delete User";
     }
 
 }

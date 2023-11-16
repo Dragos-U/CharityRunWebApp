@@ -11,7 +11,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Registration {
+@Table(name="course_registration")
+public class CourseRegistration {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,11 +22,10 @@ public class Registration {
     @Column(name = "t_shirt_size")
     private char tShirtSize;
 
-    @OneToMany (mappedBy = "registration")
+    @OneToMany (mappedBy = "courseRegistration")
     private List<TrainingPlan> trainingPlans;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "app_user_id")
+    @OneToOne(mappedBy = "courseRegistration")
     private AppUser appUser;
 
     @ManyToOne(cascade = CascadeType.PERSIST)

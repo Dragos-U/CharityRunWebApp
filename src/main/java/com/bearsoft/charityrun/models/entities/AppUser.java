@@ -34,8 +34,9 @@ public class AppUser {
     @JoinColumn(name = "address_id")
     private Address address;
 
-    @OneToMany(mappedBy = "appUser", cascade = CascadeType.ALL)
-    private Set<Registration> registrations;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "course_registration_id)")
+    private CourseRegistration courseRegistration;
 
     @OneToMany(mappedBy = "appUser" )
     private List<Token> tokens;

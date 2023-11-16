@@ -26,7 +26,7 @@ public class Course {
     private LocalDateTime startTime;
 
     @OneToMany(mappedBy = "course")
-    private Set<Registration> registrations;
+    private Set<CourseRegistration> courseRegistrations;
 
     @ManyToOne
     @JoinColumn(name="event_id")

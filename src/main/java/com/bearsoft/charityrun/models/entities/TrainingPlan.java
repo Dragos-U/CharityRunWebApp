@@ -18,5 +18,5 @@ public class TrainingPlan {
 
     @ManyToOne
     @JoinColumn(name="registration_id")
-    private Registration registration;
+    private CourseRegistration courseRegistration;
 }
