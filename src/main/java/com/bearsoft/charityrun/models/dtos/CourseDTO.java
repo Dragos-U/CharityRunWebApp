@@ -1,20 +1,18 @@
 package com.bearsoft.charityrun.models.dtos;
 
-import com.bearsoft.charityrun.models.entities.Event;
-import com.bearsoft.charityrun.models.entities.CourseRegistration;
 import com.bearsoft.charityrun.models.enums.CourseType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
-import java.time.LocalDateTime;
-import java.util.Set;
+import java.time.LocalTime;
 
 @Data
 @Builder
 public class CourseDTO {
 
-    private Long id;
+    private Long eventID;
     private CourseType courseType;
-    private LocalDateTime startTime;
-    private Set<CourseRegistration> courseRegistrations;
-    private Event event;
+
+    @JsonFormat(pattern = "HH:mm")
+    private LocalTime startTime;
 }

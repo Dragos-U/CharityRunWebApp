@@ -1,5 +1,6 @@
 package com.bearsoft.charityrun.models.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,6 +25,7 @@ public class Event {
     private LocalDate date;
 
     @OneToMany(mappedBy = "event")
+    @JsonManagedReference
     private List<Course> courses;
 
 }

@@ -13,7 +13,6 @@ import java.util.List;
 @Builder
 public class EventDTO {
 
-    private Long id;
     private String name;
     private String venue;
     private LocalDate date;

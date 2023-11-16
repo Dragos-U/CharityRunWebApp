@@ -14,7 +14,6 @@ import java.util.List;
 @Builder
 public class RegistrationDTO {
 
-    private Long id;
     private int bib;
     private char tShirtSize;
     private List<TrainingPlan> trainingPlans;

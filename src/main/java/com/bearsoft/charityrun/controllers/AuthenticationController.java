@@ -7,6 +7,7 @@ import com.bearsoft.charityrun.services.security.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,8 +22,7 @@ public class AuthenticationController {
 
     @PostMapping("/registration")
     public ResponseEntity<AuthenticationResponseDTO> register(@RequestBody AppUserDTO appUserDTO){
-        return ResponseEntity.ok(authenticationService.registerAppUser(appUserDTO));
-        //return ResponseEntity.status(HttpStatus.CREATED).body(organizerService.createOrganizer(organizerDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(authenticationService.registerAppUser(appUserDTO));
     }
 
     @PostMapping("/login")
