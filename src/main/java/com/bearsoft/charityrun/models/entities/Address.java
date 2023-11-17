@@ -1,5 +1,6 @@
 package com.bearsoft.charityrun.models.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,5 +22,6 @@ public class Address {
     private String postalCode;
 
     @OneToOne(mappedBy = "address")
+    @JsonBackReference
     private AppUser appUser;
 }

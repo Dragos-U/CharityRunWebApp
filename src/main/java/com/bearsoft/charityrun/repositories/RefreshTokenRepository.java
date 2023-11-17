@@ -4,4 +4,6 @@ import com.bearsoft.charityrun.models.entities.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
+
+    void deleteByAppUserId(Long appUserId);
 }

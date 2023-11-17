@@ -1,6 +1,7 @@
 package com.bearsoft.charityrun.models.entities;
 
 import com.bearsoft.charityrun.models.enums.TokenType;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,5 +25,6 @@ public class Token {
 
     @ManyToOne
     @JoinColumn(name="app_user_id")
+    @JsonBackReference
     private AppUser appUser;
 }

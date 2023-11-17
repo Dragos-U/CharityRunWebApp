@@ -21,7 +21,7 @@ public class AdminController {
     public ResponseEntity<String> changePassword(
             @RequestBody ChangePasswordDTO changePasswordDTO,
             Principal connectedAppUser){
-        appUserServiceImpl.changePassword(changePasswordDTO, connectedAppUser);
+        appUserServiceImpl.changeConnectedAppUserPassword(changePasswordDTO, connectedAppUser);
         return ResponseEntity.status(202).body("Your password was changed.");
     }
     @GetMapping

@@ -1,5 +1,6 @@
 package com.bearsoft.charityrun.models.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,13 +33,15 @@ public class AppUser {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id")
+    @JsonManagedReference
     private Address address;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "course_registration_id)")
     private CourseRegistration courseRegistration;
 
-    @OneToMany(mappedBy = "appUser" )
+    @OneToMany(mappedBy = "appUser", fetch = FetchType.EAGER )
+    @JsonManagedReference
     private List<Token> tokens;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
