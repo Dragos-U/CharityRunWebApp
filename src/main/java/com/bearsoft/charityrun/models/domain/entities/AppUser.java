@@ -36,8 +36,9 @@ public class AppUser {
     @JsonManagedReference
     private Address address;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "course_registration_id)")
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER )
+    @JoinColumn(name = "course_registration_id")
+    @JsonManagedReference
     private CourseRegistration courseRegistration;
 
     @OneToMany(mappedBy = "appUser", fetch = FetchType.EAGER )
@@ -46,7 +47,7 @@ public class AppUser {
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "appuser_roles",
-    joinColumns = @JoinColumn(name="user_id"),
-    inverseJoinColumns = @JoinColumn(name = "role_id"))
+        joinColumns = @JoinColumn(name="user_id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 }

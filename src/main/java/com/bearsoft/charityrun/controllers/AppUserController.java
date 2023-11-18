@@ -20,14 +20,14 @@ public class AppUserController {
     private final AppUserService appUserService;
 
     @GetMapping
-    public ResponseEntity<AppUserDTO> retrieveCurrentlyLoggedUserData(Principal connectedAppUser) {
+    public ResponseEntity<AppUserDTO> getLoggedAppUserData(Principal connectedAppUser) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(appUserService.getConnectedAppUserData(connectedAppUser));
     }
 
     @PutMapping
-    public ResponseEntity<AppUserDTO> updateCurrentlyLoggedUserData(
+    public ResponseEntity<AppUserDTO> updateLoggedAppUserData(
             @RequestBody AppUserDTO appUserDTO,
             Principal connectedAppUser) {
         return ResponseEntity
@@ -36,7 +36,7 @@ public class AppUserController {
     }
 
     @PatchMapping
-    public ResponseEntity<String> changeCurrentlyLoggedUserPassword(
+    public ResponseEntity<String> changeLoggedAppUserPassword(
             @RequestBody ChangePasswordDTO changePasswordDTO,
             Principal connectedAppUser) {
         appUserService.changeConnectedAppUserPassword(changePasswordDTO, connectedAppUser);
@@ -46,7 +46,7 @@ public class AppUserController {
     }
 
     @DeleteMapping("/{email}")
-    public ResponseEntity<String> deleteCurrentlyLoggedUser(
+    public ResponseEntity<String> deletedLoggedAppUser(
             @PathVariable String email,
             Principal connectedAppUser) {
         boolean isUserDeleted = appUserService.deletedConnectedAppUser(email, connectedAppUser);

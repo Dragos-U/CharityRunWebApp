@@ -21,17 +21,17 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/registration")
-    public ResponseEntity<AuthenticationResponseDTO> register(@RequestBody AppUserDTO appUserDTO){
+    public ResponseEntity<AuthenticationResponseDTO> registerAppUser(@RequestBody AppUserDTO appUserDTO){
         return ResponseEntity.status(HttpStatus.CREATED).body(authenticationService.registerAppUser(appUserDTO));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponseDTO> register(@RequestBody AuthenticationRequestDTO authRequestDTO){
+    public ResponseEntity<AuthenticationResponseDTO> loginAppUser(@RequestBody AuthenticationRequestDTO authRequestDTO){
         return ResponseEntity.ok(authenticationService.authenticateAppUser(authRequestDTO));
     }
 
     @PostMapping("/refresh-token")
-    public void refreshToken(
+    public void refreshLoggedUserToken(
             HttpServletRequest request,
             HttpServletResponse response) throws IOException {
         authenticationService.refreshToken(request, response);

@@ -1,6 +1,7 @@
 package com.bearsoft.charityrun.models.domain.dtos;
 
 import com.bearsoft.charityrun.models.domain.entities.Address;
+import com.bearsoft.charityrun.models.domain.entities.CourseRegistration;
 import lombok.*;
 
 @Data
@@ -12,5 +13,5 @@ public class AppUserDTO {
     private String email;
     private String password;
     private Address address;
-    //private Set<Role> roles;
+    private CourseRegistration courseRegistration;
 }
