@@ -1,6 +1,7 @@
 package com.bearsoft.charityrun.models.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,6 +20,6 @@ public class TrainingPlan {
 
     @ManyToOne
     @JoinColumn(name="registration_id")
-    @JsonBackReference
+    @JsonBackReference("courseRegistration-trainingPlan")
     private CourseRegistration courseRegistration;
 }

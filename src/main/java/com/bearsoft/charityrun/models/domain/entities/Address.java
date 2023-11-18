@@ -22,6 +22,6 @@ public class Address {
     private String postalCode;
 
     @OneToOne(mappedBy = "address")
-    @JsonBackReference
+    @JsonBackReference("appUser-address")
     private AppUser appUser;
 }

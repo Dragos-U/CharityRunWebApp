@@ -33,16 +33,16 @@ public class AppUser {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id")
-    @JsonManagedReference
+    @JsonManagedReference("appUser-address")
     private Address address;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER )
     @JoinColumn(name = "course_registration_id")
-    @JsonManagedReference
+    @JsonManagedReference("appUser-courseRegistration")
     private CourseRegistration courseRegistration;
 
     @OneToMany(mappedBy = "appUser", fetch = FetchType.EAGER )
-    @JsonManagedReference
+    @JsonManagedReference("appUser-tokens")
     private List<Token> tokens;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)

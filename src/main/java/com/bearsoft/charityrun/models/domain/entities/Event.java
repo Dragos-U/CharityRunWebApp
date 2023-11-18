@@ -25,7 +25,7 @@ public class Event {
     private LocalDate date;
 
     @OneToMany(mappedBy = "event")
-    @JsonManagedReference
+    @JsonManagedReference("event-courses")
     private List<Course> courses;
 
 }

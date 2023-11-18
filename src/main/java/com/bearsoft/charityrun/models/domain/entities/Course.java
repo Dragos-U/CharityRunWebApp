@@ -28,12 +28,12 @@ public class Course {
     private LocalTime startTime;
 
     @OneToMany(mappedBy = "course")
-    @JsonManagedReference
+    @JsonManagedReference("course-courseRegistration")
     private Set<CourseRegistration> courseRegistrations;
 
     @ManyToOne
     @JoinColumn(name="event_id")
-    @JsonBackReference
+    @JsonBackReference("event-courses")
     private Event event;
 
     public double getCourseLength() {

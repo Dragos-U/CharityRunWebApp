@@ -27,15 +27,15 @@ public class CourseRegistration {
     private TShirtSize tshirtSize;
 
     @OneToMany (mappedBy = "courseRegistration",fetch = FetchType.EAGER )
-    @JsonManagedReference
+    @JsonManagedReference("courseRegistration-trainingPlan")
     private List<TrainingPlan> trainingPlans;
 
     @OneToOne(mappedBy = "courseRegistration")
-    @JsonBackReference
+    @JsonBackReference("appUser-courseRegistration")
     private AppUser appUser;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "course_id")
-    @JsonBackReference
+    @JsonBackReference("course-courseRegistration")
     private Course course;
 }
