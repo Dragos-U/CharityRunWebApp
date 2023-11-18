@@ -1,7 +1,7 @@
 package com.bearsoft.charityrun.controllers;
 
-import com.bearsoft.charityrun.models.dtos.AppUserDTO;
-import com.bearsoft.charityrun.models.dtos.ChangePasswordDTO;
+import com.bearsoft.charityrun.models.domain.dtos.AppUserDTO;
+import com.bearsoft.charityrun.models.domain.dtos.ChangePasswordDTO;
 import com.bearsoft.charityrun.services.AppUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

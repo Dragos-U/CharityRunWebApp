@@ -1,6 +1,6 @@
 package com.bearsoft.charityrun.config;
 
-import com.bearsoft.charityrun.config.security.PassEncoderConfig;
+import com.bearsoft.charityrun.security.config.PassEncoderConfig;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

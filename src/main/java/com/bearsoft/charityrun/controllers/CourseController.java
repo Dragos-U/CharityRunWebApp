@@ -1,7 +1,7 @@
 package com.bearsoft.charityrun.controllers;
 
-import com.bearsoft.charityrun.models.dtos.CourseDTO;
-import com.bearsoft.charityrun.models.enums.CourseType;
+import com.bearsoft.charityrun.models.domain.dtos.CourseDTO;
+import com.bearsoft.charityrun.models.domain.enums.CourseType;
 import com.bearsoft.charityrun.services.CourseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

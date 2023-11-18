@@ -1,7 +1,7 @@
 package com.bearsoft.charityrun.repositories;
 
-import com.bearsoft.charityrun.models.entities.Course;
-import com.bearsoft.charityrun.models.enums.CourseType;
+import com.bearsoft.charityrun.models.domain.entities.Course;
+import com.bearsoft.charityrun.models.domain.enums.CourseType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

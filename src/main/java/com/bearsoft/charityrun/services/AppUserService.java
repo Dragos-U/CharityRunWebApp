@@ -1,8 +1,8 @@
 package com.bearsoft.charityrun.services;
 
-import com.bearsoft.charityrun.models.SecurityAppUser;
-import com.bearsoft.charityrun.models.dtos.AppUserDTO;
-import com.bearsoft.charityrun.models.dtos.ChangePasswordDTO;
+import com.bearsoft.charityrun.models.security.SecurityAppUser;
+import com.bearsoft.charityrun.models.domain.dtos.AppUserDTO;
+import com.bearsoft.charityrun.models.domain.dtos.ChangePasswordDTO;
 
 import java.security.Principal;
 

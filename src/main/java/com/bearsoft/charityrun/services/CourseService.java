@@ -1,7 +1,7 @@
 package com.bearsoft.charityrun.services;
 
-import com.bearsoft.charityrun.models.dtos.CourseDTO;
-import com.bearsoft.charityrun.models.enums.CourseType;
+import com.bearsoft.charityrun.models.domain.dtos.CourseDTO;
+import com.bearsoft.charityrun.models.domain.enums.CourseType;
 
 import java.util.List;
 

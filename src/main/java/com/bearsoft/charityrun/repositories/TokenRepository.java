@@ -1,6 +1,6 @@
 package com.bearsoft.charityrun.repositories;
 
-import com.bearsoft.charityrun.models.entities.Token;
+import com.bearsoft.charityrun.models.domain.entities.Token;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

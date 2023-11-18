@@ -1,6 +1,6 @@
 package com.bearsoft.charityrun.services;
 
-import com.bearsoft.charityrun.models.dtos.EventDTO;
+import com.bearsoft.charityrun.models.domain.dtos.EventDTO;
 
 public interface EventService {
 

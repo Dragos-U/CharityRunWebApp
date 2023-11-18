@@ -1,10 +1,9 @@
 package com.bearsoft.charityrun.services;
 
 import com.bearsoft.charityrun.exceptions.appuser.UserNotFoundException;
-import com.bearsoft.charityrun.exceptions.event.EventNotFoundException;
-import com.bearsoft.charityrun.models.SecurityAppUser;
-import com.bearsoft.charityrun.models.dtos.AppUserDTO;
-import com.bearsoft.charityrun.models.dtos.ChangePasswordDTO;
+import com.bearsoft.charityrun.models.security.SecurityAppUser;
+import com.bearsoft.charityrun.models.domain.dtos.AppUserDTO;
+import com.bearsoft.charityrun.models.domain.dtos.ChangePasswordDTO;
 import com.bearsoft.charityrun.repositories.AppUserRepository;
 import com.bearsoft.charityrun.repositories.RefreshTokenRepository;
 import com.bearsoft.charityrun.repositories.TokenRepository;

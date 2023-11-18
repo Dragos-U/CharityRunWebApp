@@ -1,6 +1,6 @@
 package com.bearsoft.charityrun.controllers;
 
-import com.bearsoft.charityrun.models.dtos.EventDTO;
+import com.bearsoft.charityrun.models.domain.dtos.EventDTO;
 import com.bearsoft.charityrun.services.EventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
