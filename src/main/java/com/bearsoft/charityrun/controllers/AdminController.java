@@ -1,33 +1,28 @@
 package com.bearsoft.charityrun.controllers;
 
+import com.bearsoft.charityrun.models.domain.dtos.ChangePasswordDTO;
+import com.bearsoft.charityrun.services.AppUserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @RestController
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 @RequestMapping("/api/v1/admin")
+@RequiredArgsConstructor
 public class AdminController {
 
-    @GetMapping
-    public String get(){
-        return "GET : admin controller";
-    }
+    private final AppUserService appUserService;
 
-    @PostMapping
-    public String post(){
-        return "POST : admin controller";
-    }
-
-    @PutMapping
-    @PreAuthorize("hasAuthority('admin:update')")
-    public String put(){
-        return "PUT : admin controller";
-    }
-
-    @DeleteMapping
-    @PreAuthorize("hasAuthority('admin:delete')")
-    public String delete(){
-        return "DELETE : admin controller";
+    @PatchMapping
+    public ResponseEntity<String> changePassword(
+            @RequestBody ChangePasswordDTO changePasswordDTO,
+            Principal connectedAppUser){
+        appUserService.changeConnectedAppUserPassword(changePasswordDTO, connectedAppUser);
+        return ResponseEntity.status(202).body("Your password was changed.");
     }
 
 }
