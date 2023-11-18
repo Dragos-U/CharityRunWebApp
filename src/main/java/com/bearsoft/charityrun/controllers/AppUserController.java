@@ -10,23 +10,31 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/users")
-@PreAuthorize("hasRole('ROLE_USER')")
 @RequiredArgsConstructor
 public class AppUserController {
 
     private final AppUserService appUserService;
 
-    @GetMapping
+    @GetMapping("/me")
+    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
     public ResponseEntity<AppUserDTO> getLoggedAppUserData(Principal connectedAppUser) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(appUserService.getConnectedAppUserData(connectedAppUser));
     }
 
-    @PutMapping
+    @GetMapping("/all")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<List<AppUserDTO>> getAllAppUsers(){
+        return ResponseEntity.status(HttpStatus.OK).body(appUserService.getAllAppUsers());
+    }
+
+    @PutMapping("/me")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<AppUserDTO> updateLoggedAppUserData(
             @RequestBody AppUserDTO appUserDTO,
             Principal connectedAppUser) {
@@ -35,7 +43,8 @@ public class AppUserController {
                 .body(appUserService.updateConnectedAppUserData(appUserDTO, connectedAppUser));
     }
 
-    @PatchMapping
+    @PatchMapping("/me")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<String> changeLoggedAppUserPassword(
             @RequestBody ChangePasswordDTO changePasswordDTO,
             Principal connectedAppUser) {
@@ -45,11 +54,24 @@ public class AppUserController {
                 .body("Your password was successfully changed.");
     }
 
-    @DeleteMapping("/{email}")
+    @DeleteMapping("(/me/{email}")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<String> deletedLoggedAppUser(
             @PathVariable String email,
             Principal connectedAppUser) {
         boolean isUserDeleted = appUserService.deletedConnectedAppUser(email, connectedAppUser);
         return ResponseEntity.status(HttpStatus.OK).body("User with email: "+ email+ " deleted ? "+ isUserDeleted);
+    }
+
+    @GetMapping("/users/me/{email}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<AppUserDTO> getUserDetails(@PathVariable String email){
+        return null;
+    }
+
+    @DeleteMapping("/users/me/{email}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public String deleteUser(@PathVariable String email){
+        return "Delete User";
     }
 }

@@ -1,12 +1,14 @@
 package com.bearsoft.charityrun.services;
 
 import com.bearsoft.charityrun.exceptions.appuser.UserNotFoundException;
+import com.bearsoft.charityrun.models.domain.entities.AppUser;
 import com.bearsoft.charityrun.models.security.SecurityAppUser;
 import com.bearsoft.charityrun.models.domain.dtos.AppUserDTO;
 import com.bearsoft.charityrun.models.domain.dtos.ChangePasswordDTO;
 import com.bearsoft.charityrun.repositories.AppUserRepository;
 import com.bearsoft.charityrun.repositories.RefreshTokenRepository;
 import com.bearsoft.charityrun.repositories.TokenRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +30,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final TokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ObjectMapper objectMapper;
 
     @Override
     @Transactional
@@ -49,6 +53,15 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
                 .address(appUser.getAddress())
                 .courseRegistration(appUser.getCourseRegistration())
                 .build();
+    }
+
+    @Override
+    public List<AppUserDTO> getAllAppUsers() {
+        List<AppUser> appUsers = appUserRepository.findAllUsers();
+        return appUsers
+                .stream()
+                .map(appUser -> objectMapper.convertValue(appUser, AppUserDTO.class))
+                .toList();
     }
 
     @Override
