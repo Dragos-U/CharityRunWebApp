@@ -12,10 +12,14 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     boolean existsByDate(LocalDate date);
 
+    @Query("""
+            SELECT e FROM Event e WHERE e.id = :id
+            """)
+    Optional<Event> getEventById(Long id);
+
     @Modifying
     @Query("""
         DELETE FROM Event e WHERE e.id = :id
             """)
     void deleteById(Long id);
-    Optional<Event> getEventById(Long id);
 }

@@ -12,10 +12,18 @@ import java.util.Optional;
 public interface CourseRepository extends JpaRepository<Course, Long> {
 
     @Query("""
-                SELECT c FROM Course c
+                SELECT c FROM Course c WHERE c.event.id =:eventID
             """)
-    List<Course> findAllCourses();
+    List<Course> findAllCoursesByEventId(Long eventID);
+
+    @Query("""
+            SELECT c FROM Course c WHERE c.courseType = :courseType
+            """)
     Optional<Course> getCourseByCourseType(CourseType courseType);
+    @Query("""
+                    SELECT c from Course c WHERE c.courseType = :courseType AND c.event.id = :eventID
+            """)
+    Optional<Course> getCourseByCourseTypeAndEventId(Long eventID,CourseType courseType);
 
     boolean existsByCourseType(CourseType courseType);
 

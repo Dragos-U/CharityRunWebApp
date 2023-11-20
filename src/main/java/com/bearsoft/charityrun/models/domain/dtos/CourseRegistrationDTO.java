@@ -2,6 +2,9 @@ package com.bearsoft.charityrun.models.domain.dtos;
 
 import com.bearsoft.charityrun.models.domain.enums.CourseType;
 import com.bearsoft.charityrun.models.domain.enums.TShirtSize;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Getter
@@ -11,6 +14,9 @@ import lombok.*;
 @Builder
 public class CourseRegistrationDTO {
 
-    private TShirtSize tshirtSize;
+    @NotNull(message = "The T-Shirt-size must not be null.")
+    private TShirtSize tShirtSize;
+
+    @NotNull(message = "The Course-Type must not be null.")
     private CourseType courseType;
 }

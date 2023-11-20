@@ -51,7 +51,7 @@ public class AppUserController {
         appUserService.changeConnectedAppUserPassword(changePasswordDTO, connectedAppUser);
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
-                .body("Your password was successfully changed.");
+                .body("The password was successfully changed.");
     }
 
     @DeleteMapping("(/me/{email}")
@@ -59,19 +59,21 @@ public class AppUserController {
     public ResponseEntity<String> deletedLoggedAppUser(
             @PathVariable String email,
             Principal connectedAppUser) {
-        boolean isUserDeleted = appUserService.deletedConnectedAppUser(email, connectedAppUser);
-        return ResponseEntity.status(HttpStatus.OK).body("User with email: "+ email+ " deleted ? "+ isUserDeleted);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(appUserService.deletedConnectedAppUser(email, connectedAppUser));
     }
 
     @GetMapping("/users/me/{email}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<AppUserDTO> getUserDetails(@PathVariable String email){
+    public ResponseEntity<AppUserDTO> getUserDetails(
+            @PathVariable String email){
         return null;
     }
 
     @DeleteMapping("/users/me/{email}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public String deleteUser(@PathVariable String email){
+    public String deleteUser(
+            @PathVariable String email){
         return "Delete User";
     }
 }

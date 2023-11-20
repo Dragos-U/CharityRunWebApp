@@ -22,29 +22,36 @@ public class CourseController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_USER','ROLE_PARTICIPANT')")
-    public ResponseEntity<List<CourseDTO>> getAllCourses() {
-        return ResponseEntity.status(HttpStatus.OK).body(courseService.getAllCourses());
+    public ResponseEntity<List<CourseDTO>> getAllCourses(
+            @RequestParam(required = false, defaultValue = "1") Long eventID
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(courseService.getCourseByEventId(eventID));
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<CourseDTO> createCourse(@RequestBody CourseDTO courseDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(courseService.createCourse(courseDTO));
+    public ResponseEntity<CourseDTO> createCourse(
+            @RequestParam(required = false, defaultValue = "1") Long eventID,
+            @RequestBody CourseDTO courseDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(courseService.createCourse(courseDTO, eventID));
     }
 
     @PatchMapping()
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<CourseDTO> updateCourseStartTime(@RequestBody CourseDTO courseDTO) {
+    public ResponseEntity<CourseDTO> updateCourseStartTime(
+            @RequestParam(required = false, defaultValue = "1") Long eventID,
+            @RequestBody CourseDTO courseDTO) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(courseService.updateCourseStartTime(courseDTO));
+                .body(courseService.updateCourseStartTime(courseDTO, eventID));
     }
 
     @DeleteMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<String> deleteCourseByType(
+            @RequestParam(required = true, defaultValue = "1") Long eventID,
             @RequestParam(required = true) CourseType courseType,
             @RequestParam(required = true, defaultValue = "false") String deleteApproval) {
-        boolean isCourseDeleted = courseService.deleteCourse(courseType, deleteApproval);
+        boolean isCourseDeleted = courseService.deleteEventCourseByType(eventID, courseType, deleteApproval);
         return ResponseEntity.status(HttpStatus.OK).body("Event deleted: " + isCourseDeleted);
     }
 }

@@ -13,6 +13,6 @@ public interface AppUserService {
     void changeConnectedAppUserPassword(ChangePasswordDTO changePasswordDTO, Principal connectedAppUser);
     AppUserDTO getConnectedAppUserData(Principal connectedAppUser);
     public AppUserDTO updateConnectedAppUserData(AppUserDTO appUserDTO, Principal connectedAppUser);
-    boolean deletedConnectedAppUser(String email, Principal connectedAppUser);
+    String deletedConnectedAppUser(String email, Principal connectedAppUser);
     List<AppUserDTO> getAllAppUsers();
 }

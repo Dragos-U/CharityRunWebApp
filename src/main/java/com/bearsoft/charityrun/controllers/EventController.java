@@ -17,7 +17,8 @@ public class EventController {
     private final EventService eventService;
 
     @GetMapping("/{eventID}")
-    public ResponseEntity<EventDTO> getEventByID(@PathVariable Long eventID){
+    public ResponseEntity<EventDTO> getEventByID(
+            @PathVariable Long eventID){
         EventDTO eventDTO = eventService.getEventById(eventID);
         return ResponseEntity.status(HttpStatus.OK).body(eventDTO);
     }
@@ -29,18 +30,16 @@ public class EventController {
     }
 
     @PutMapping("/{eventID}")
-    public ResponseEntity<String> updateEventByID(
+    public ResponseEntity<EventDTO> updateEventByID(
             @PathVariable Long eventID,
             @RequestBody EventDTO eventDTO){
-        eventService.updateEvent(eventID, eventDTO);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body("Event updated.");
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(eventService.updateEventByID(eventID, eventDTO));
     }
 
     @DeleteMapping
     public ResponseEntity<String> deleteEventByID(
             @RequestParam(required = true) Long eventID,
             @RequestParam(required = true, defaultValue = "false") String deleteApproval){
-        boolean isEventDeleted = eventService.deleteEvent(eventID, deleteApproval);
-        return ResponseEntity.status(HttpStatus.OK).body("Event deleted: "+isEventDeleted);
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.deleteEvent(eventID, deleteApproval));
     }
 }

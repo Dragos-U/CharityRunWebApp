@@ -7,8 +7,8 @@ import java.util.List;
 
 public interface CourseService {
 
-    CourseDTO createCourse(CourseDTO courseDTO);
-    CourseDTO updateCourseStartTime(CourseDTO courseDTO);
-    List<CourseDTO> getAllCourses();
-    boolean deleteCourse(CourseType courseType, String deleteApproval);
+    CourseDTO createCourse(CourseDTO courseDTO, Long eventID);
+    CourseDTO updateCourseStartTime(CourseDTO courseDTO, Long eventID);
+    List<CourseDTO> getCourseByEventId(Long eventID);
+    boolean deleteEventCourseByType(Long eventID, CourseType courseType, String deleteApproval);
 }

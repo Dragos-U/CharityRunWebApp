@@ -24,7 +24,7 @@ public class CourseRegistration {
 
     @Column(name = "t_shirt_size")
     @Enumerated(EnumType.STRING)
-    private TShirtSize tshirtSize;
+    private TShirtSize tShirtSize;
 
     @OneToMany (mappedBy = "courseRegistration",fetch = FetchType.EAGER )
     @JsonManagedReference("courseRegistration-trainingPlan")

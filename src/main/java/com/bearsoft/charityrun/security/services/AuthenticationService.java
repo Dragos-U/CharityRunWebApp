@@ -1,5 +1,7 @@
 package com.bearsoft.charityrun.security.services;
 
+import com.bearsoft.charityrun.exceptions.appuser.PasswordDoesNotMatchException;
+import com.bearsoft.charityrun.exceptions.appuser.UserNotFoundException;
 import com.bearsoft.charityrun.models.domain.dtos.AuthenticationRequestDTO;
 import com.bearsoft.charityrun.models.domain.dtos.AuthenticationResponseDTO;
 import com.bearsoft.charityrun.models.security.SecurityAppUser;
@@ -10,17 +12,22 @@ import com.bearsoft.charityrun.models.domain.entities.Role;
 import com.bearsoft.charityrun.models.domain.entities.Token;
 import com.bearsoft.charityrun.models.domain.enums.RoleType;
 import com.bearsoft.charityrun.models.domain.enums.TokenType;
+import com.bearsoft.charityrun.models.validation.OnCreate;
 import com.bearsoft.charityrun.repositories.AppUserRepository;
 import com.bearsoft.charityrun.repositories.RefreshTokenRepository;
 import com.bearsoft.charityrun.repositories.TokenRepository;
+import com.bearsoft.charityrun.validator.ObjectsValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +38,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class AuthenticationService {
 
@@ -41,6 +49,9 @@ public class AuthenticationService {
     private final JwtFilterService jwtFilterService;
     private final PasswordEncoder passwordEncoder;
 
+    private final ObjectsValidator<AppUserDTO> appUserDTOValidator;
+    private final ObjectsValidator<AuthenticationRequestDTO> authenticationRequestDTOObjectsValidator;
+
     private static final String BEARER_PREFIX = "Bearer ";
     private static final String AUTHORIZATION_HEADER  = "Authorization";
 
@@ -48,6 +59,8 @@ public class AuthenticationService {
     private long refreshExpiration;
 
     public AuthenticationResponseDTO registerAppUser(AppUserDTO appUserDTO) {
+        appUserDTOValidator.validate(appUserDTO, OnCreate.class);
+
         var appUser = AppUser.builder()
                 .firstName(appUserDTO.getFirstName())
                 .lastName(appUserDTO.getLastName())
@@ -71,17 +84,30 @@ public class AuthenticationService {
                 .build();
     }
 
-    public AuthenticationResponseDTO authenticateAppUser(AuthenticationRequestDTO request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()));
-        var appUser = appUserRepository.findAppUsersByEmail(request.getEmail())
-                .orElseThrow();
+    public AuthenticationResponseDTO loginAppUser(AuthenticationRequestDTO authenticationRequestDTO) {
+        authenticationRequestDTOObjectsValidator.validate(authenticationRequestDTO);
+
+        try{
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            authenticationRequestDTO.getEmail(),
+                            authenticationRequestDTO.getPassword()));
+        } catch (UsernameNotFoundException usernameNotFoundException){
+            log.error("Authentication failed. Username not found. {}", usernameNotFoundException.getMessage());
+            throw new UserNotFoundException("Username not found.");
+        } catch (BadCredentialsException badCredentialsException) {
+            log.error("Authentication failed. Wrong password. {}", badCredentialsException.getMessage());
+            throw new PasswordDoesNotMatchException("Wrong password.");
+        }
+
+        var appUser = appUserRepository.findAppUsersByEmail(authenticationRequestDTO.getEmail())
+                .orElseThrow(()-> new UserNotFoundException("User not found."));
 
         SecurityAppUser securityAppUser = new SecurityAppUser(appUser);
         var jwtToken = jwtFilterService.generateToken(securityAppUser);
+        log.info("New token was generated");
         var refreshToken = jwtFilterService.generateRefreshToken(securityAppUser);
+        log.info("New refresh was generated");
         revokeAllAppUserTokens(appUser);
         saveJwtTokenToRepo(appUser, jwtToken);
 
@@ -99,7 +125,9 @@ public class AuthenticationService {
             t.setExpired(true);
             t.setRevoked(true);
         });
+        log.info("Token was revoked");
         tokenRepository.saveAll(validAppUserToken);
+        log.info("New token saved to database.");
     }
 
     private void saveJwtTokenToRepo(AppUser appUser, String jwtToken) {
@@ -111,6 +139,7 @@ public class AuthenticationService {
                 .expired(false)
                 .build();
         tokenRepository.save(token);
+        log.info("Token saved to database.");
     }
 
     private void saveRefreshTokenToRepo(AppUser appUser, String refreshToken) {
@@ -122,7 +151,7 @@ public class AuthenticationService {
         refreshTokenRepository.save(token);
     }
 
-    public void refreshToken(
+    public void refreshLoggedUserToken(
             HttpServletRequest request,
             HttpServletResponse response) throws IOException {
 
