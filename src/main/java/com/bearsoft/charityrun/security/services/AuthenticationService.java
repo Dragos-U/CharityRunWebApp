@@ -1,7 +1,9 @@
 package com.bearsoft.charityrun.security.services;
 
+import com.bearsoft.charityrun.exceptions.appuser.AppUserAlreadyExistsException;
 import com.bearsoft.charityrun.exceptions.appuser.PasswordDoesNotMatchException;
 import com.bearsoft.charityrun.exceptions.appuser.UserNotFoundException;
+import com.bearsoft.charityrun.exceptions.email.EmailSendingException;
 import com.bearsoft.charityrun.models.domain.dtos.AuthenticationRequestDTO;
 import com.bearsoft.charityrun.models.domain.dtos.AuthenticationResponseDTO;
 import com.bearsoft.charityrun.models.security.SecurityAppUser;
@@ -16,14 +18,16 @@ import com.bearsoft.charityrun.models.validation.OnCreate;
 import com.bearsoft.charityrun.repositories.AppUserRepository;
 import com.bearsoft.charityrun.repositories.RefreshTokenRepository;
 import com.bearsoft.charityrun.repositories.TokenRepository;
+import com.bearsoft.charityrun.services.EmailService;
 import com.bearsoft.charityrun.validator.ObjectsValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -45,6 +49,7 @@ public class AuthenticationService {
     private final AppUserRepository appUserRepository;
     private final TokenRepository tokenRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final EmailService emailService;
     private final AuthenticationManager authenticationManager;
     private final JwtFilterService jwtFilterService;
     private final PasswordEncoder passwordEncoder;
@@ -53,13 +58,19 @@ public class AuthenticationService {
     private final ObjectsValidator<AuthenticationRequestDTO> authenticationRequestDTOObjectsValidator;
 
     private static final String BEARER_PREFIX = "Bearer ";
-    private static final String AUTHORIZATION_HEADER  = "Authorization";
+    private static final String AUTHORIZATION_HEADER = "Authorization";
 
     @Value("${application.security.jwt.refresh-token.expiration}")
     private long refreshExpiration;
 
+    @Transactional
     public AuthenticationResponseDTO registerAppUser(AppUserDTO appUserDTO) {
         appUserDTOValidator.validate(appUserDTO, OnCreate.class);
+
+        Optional<AppUser> existingUser = appUserRepository.findAppUsersByEmail(appUserDTO.getEmail());
+        if(existingUser.isPresent()){
+            throw new AppUserAlreadyExistsException("Email address is already used.");
+        }
 
         var appUser = AppUser.builder()
                 .firstName(appUserDTO.getFirstName())
@@ -78,6 +89,12 @@ public class AuthenticationService {
         saveJwtTokenToRepo(appUser, jwtToken);
         saveRefreshTokenToRepo(appUser, refreshToken);
 
+        try {
+            String subject = "Welcome to our event.";
+            emailService.sendAppUserRegistrationEmail(appUserDTO, subject);
+        } catch (EmailSendingException e) {
+            throw new EmailSendingException("Error during email sending.");
+        }
         return AuthenticationResponseDTO.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
@@ -87,12 +104,12 @@ public class AuthenticationService {
     public AuthenticationResponseDTO loginAppUser(AuthenticationRequestDTO authenticationRequestDTO) {
         authenticationRequestDTOObjectsValidator.validate(authenticationRequestDTO);
 
-        try{
+        try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             authenticationRequestDTO.getEmail(),
                             authenticationRequestDTO.getPassword()));
-        } catch (UsernameNotFoundException usernameNotFoundException){
+        } catch (UsernameNotFoundException usernameNotFoundException) {
             log.error("Authentication failed. Username not found. {}", usernameNotFoundException.getMessage());
             throw new UserNotFoundException("Username not found.");
         } catch (BadCredentialsException badCredentialsException) {
@@ -101,7 +118,7 @@ public class AuthenticationService {
         }
 
         var appUser = appUserRepository.findAppUsersByEmail(authenticationRequestDTO.getEmail())
-                .orElseThrow(()-> new UserNotFoundException("User not found."));
+                .orElseThrow(() -> new UserNotFoundException("User not found."));
 
         SecurityAppUser securityAppUser = new SecurityAppUser(appUser);
         var jwtToken = jwtFilterService.generateToken(securityAppUser);
@@ -125,7 +142,7 @@ public class AuthenticationService {
             t.setExpired(true);
             t.setRevoked(true);
         });
-        log.info("Token was revoked");
+        log.info("Old token was revoked");
         tokenRepository.saveAll(validAppUserToken);
         log.info("New token saved to database.");
     }
@@ -139,7 +156,6 @@ public class AuthenticationService {
                 .expired(false)
                 .build();
         tokenRepository.save(token);
-        log.info("Token saved to database.");
     }
 
     private void saveRefreshTokenToRepo(AppUser appUser, String refreshToken) {

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Welcome to Our Running Community!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .button {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Welcome, <span th:text="${firstName}">[Name]</span>!</h2>
+    <p>Thank you for joining our vibrant running community! Your passion for running brings us all together, and we're thrilled to have you with us.</p>
+    <p>As a member of our community, you'll enjoy access to exclusive event registrations, interactive forums, and a wealth of resources to support your running journey.</p>
+    <p>Discover all the benefits of your new account:</p>
+    <a href="#" class="button" th:href="${userDetailsPage}">Explore Your Account</a>
+</div>
+</body>
+</html>

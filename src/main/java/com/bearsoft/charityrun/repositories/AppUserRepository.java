@@ -14,7 +14,14 @@ public interface AppUserRepository extends JpaRepository<AppUser, Long> {
             """)
     Optional<AppUser> findAppUsersByEmail(String email);
 
-    @Query("SELECT au FROM AppUser au")
+    @Query("""
+            SELECT au FROM AppUser au
+            """)
     Optional<List<AppUser>> findAllUsers();
+
+    @Query("""
+                SELECT au FROM AppUser au WHERE au.courseRegistration.id != null
+            """)
+    List<AppUser> findAllRegisteredUsers();
 
 }

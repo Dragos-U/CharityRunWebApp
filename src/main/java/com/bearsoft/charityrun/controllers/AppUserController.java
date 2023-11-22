@@ -4,6 +4,7 @@ import com.bearsoft.charityrun.models.domain.dtos.AppUserDTO;
 import com.bearsoft.charityrun.models.domain.dtos.ChangePasswordDTO;
 import com.bearsoft.charityrun.services.AppUserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,6 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
+@Slf4j
 public class AppUserController {
 
     private final AppUserService appUserService;
@@ -59,21 +61,22 @@ public class AppUserController {
     public ResponseEntity<String> deletedLoggedAppUser(
             @PathVariable String email,
             Principal connectedAppUser) {
+        log.info("Enter controller");
         return ResponseEntity.status(HttpStatus.OK)
                 .body(appUserService.deletedConnectedAppUser(email, connectedAppUser));
     }
 
-    @GetMapping("/users/me/{email}")
+    @GetMapping("/users/{email}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<AppUserDTO> getUserDetails(
+    public ResponseEntity<AppUserDTO> getUserByEmail(
             @PathVariable String email){
         return null;
     }
 
-    @DeleteMapping("/users/me/{email}")
+    @DeleteMapping("/users/{email}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public String deleteUser(
+    public ResponseEntity<AppUserDTO> deleteUserByEmail(
             @PathVariable String email){
-        return "Delete User";
+        return null;
     }
 }

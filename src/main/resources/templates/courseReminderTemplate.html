@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Running Event Reminder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .alert {
+            background-color: #ffeb3b;
+            color: #333;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-left: 3px solid #ffc107;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Hello, <span th:text="${firstName}">[User First Name]</span>!</h2>
+    <div class="alert">
+        <p>This is a friendly reminder that the running event you've registered for is just <strong><span th:text="${daysUntilCourse}">[Days until event]</span></strong> days away!</p>
+    </div>
+    <p>We're thrilled to have you join us for this exciting event. As the day approaches, it's a great time to ramp up your training and get prepared. Whether you're aiming for a personal best or just looking to enjoy the experience, we're here to support you every step of the way.</p>
+    <p>Please ensure you're familiar with the event details, including the course route and start times. Also, remember to check your gear and make sure you're all set for the big day.</p>
+    <p>If you have any questions about the event or need assistance with your preparations, don't hesitate to reach out to us. We're more than happy to help!</p>
+    <p>Looking forward to seeing you at the starting line!</p>
+    <p>Best regards,<br><span th:text="${eventName}">[Event name]</span> team</p>
+</div>
+</body>
+</html>

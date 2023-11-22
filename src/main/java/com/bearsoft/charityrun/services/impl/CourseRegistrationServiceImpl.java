@@ -11,6 +11,7 @@ import com.bearsoft.charityrun.repositories.AppUserRepository;
 import com.bearsoft.charityrun.repositories.CourseRegistrationRepository;
 import com.bearsoft.charityrun.repositories.CourseRepository;
 import com.bearsoft.charityrun.services.CourseRegistrationService;
+import com.bearsoft.charityrun.services.EmailService;
 import com.bearsoft.charityrun.validator.ObjectsValidator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import java.security.Principal;
 @RequiredArgsConstructor
 public class CourseRegistrationServiceImpl implements CourseRegistrationService {
 
+    private final EmailService emailService;
     private final AppUserRepository appUserRepository;
     private final CourseRepository courseRepository;
     private final CourseRegistrationRepository courseRegistrationRepository;
@@ -83,6 +85,10 @@ public class CourseRegistrationServiceImpl implements CourseRegistrationService 
 
             appUserRepository.save(appUser);
             courseRegistrationRepository.save(courseRegistration);
+
+            String subject = "Course Registration Confirmation.";
+            emailService.sendCourseRegistrationEmail(courseRegistrationDTO,appUser,subject);
+
             return courseRegistrationDTO;
         } catch (CourseRegistrationAlreadyExistsException e){
             throw new CourseRegistrationAlreadyExistsException(
