@@ -1,6 +1,6 @@
 package com.bearsoft.charityrun.exceptions.handler;
 
-import com.bearsoft.charityrun.exceptions.appuser.AppUserAlreadyExistsException;
+import com.bearsoft.charityrun.exceptions.appuser.*;
 import com.bearsoft.charityrun.exceptions.course.CourseNotFoundException;
 import com.bearsoft.charityrun.exceptions.courseregistration.CourseRegistrationAlreadyExistsException;
 import com.bearsoft.charityrun.exceptions.courseregistration.CourseRegistrationNotFoundException;
@@ -9,8 +9,6 @@ import com.bearsoft.charityrun.exceptions.event.EventAlreadyExistsException;
 import com.bearsoft.charityrun.exceptions.event.EventNotFoundException;
 import com.bearsoft.charityrun.exceptions.event.EventUpdateException;
 import com.bearsoft.charityrun.models.exception.ApiException;
-import com.bearsoft.charityrun.exceptions.appuser.PasswordDoesNotMatchException;
-import com.bearsoft.charityrun.exceptions.appuser.UserNotFoundException;
 import com.bearsoft.charityrun.exceptions.course.CourseAlreadyExistException;
 import com.bearsoft.charityrun.exceptions.objectvalidator.ObjectNotValidException;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +28,7 @@ public class GlobalExceptionHandler {
     private static final HttpStatus BAD_REQUEST = HttpStatus.BAD_REQUEST;
     private static final HttpStatus CONFLICT = HttpStatus.CONFLICT;
     private static final HttpStatus FORBIDDEN = HttpStatus.FORBIDDEN;
+    private static final HttpStatus UNAUTHORIZED = HttpStatus.UNAUTHORIZED;
 
     @ExceptionHandler(ObjectNotValidException.class)
     public ResponseEntity<Object> handleObjectNotValidException(ObjectNotValidException objectNotValidException) {
@@ -61,6 +60,28 @@ public class GlobalExceptionHandler {
         log.error("UserNotFoundException occurred: {}", userNotFoundException.getMessage(), userNotFoundException);
         ApiException apiException = ApiException.builder()
                 .message(userNotFoundException.getMessage())
+                .httpStatus(BAD_REQUEST)
+                .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
+                .build();
+        return new ResponseEntity<>(apiException, BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidUserAuthenticationException.class)
+    public ResponseEntity<Object> handlerInvalidUserAuthenticationException(InvalidUserAuthenticationException invalidUserAuthenticationException) {
+        log.error("InvalidUserAuthenticationException occurred: {}", invalidUserAuthenticationException.getMessage(), invalidUserAuthenticationException);
+        ApiException apiException = ApiException.builder()
+                .message(invalidUserAuthenticationException.getMessage())
+                .httpStatus(UNAUTHORIZED)
+                .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
+                .build();
+        return new ResponseEntity<>(apiException, UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(EmailMatchingException.class)
+    public ResponseEntity<Object> handlerEmailMatchingException(EmailMatchingException emailMatchingException) {
+        log.error("EmailMatchingException occurred: {}", emailMatchingException.getMessage(), emailMatchingException);
+        ApiException apiException = ApiException.builder()
+                .message(emailMatchingException.getMessage())
                 .httpStatus(BAD_REQUEST)
                 .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
                 .build();

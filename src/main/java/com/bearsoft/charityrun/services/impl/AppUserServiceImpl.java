@@ -1,5 +1,7 @@
 package com.bearsoft.charityrun.services.impl;
 
+import com.bearsoft.charityrun.exceptions.appuser.EmailMatchingException;
+import com.bearsoft.charityrun.exceptions.appuser.InvalidUserAuthenticationException;
 import com.bearsoft.charityrun.exceptions.appuser.PasswordDoesNotMatchException;
 import com.bearsoft.charityrun.exceptions.appuser.UserNotFoundException;
 import com.bearsoft.charityrun.models.domain.entities.AppUser;
@@ -16,7 +18,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -49,9 +53,12 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("User email not found."));
     }
 
+
+
     @Override
     @Transactional
     public AppUserDTO getConnectedAppUserData(Principal connectedAppUser) {
+        checkConnectedUserAuthentication(connectedAppUser);
         var securityAppUser = (SecurityAppUser) ((UsernamePasswordAuthenticationToken) connectedAppUser).getPrincipal();
         var appUser = securityAppUser.getAppUser();
         return AppUserDTO.builder()
@@ -76,6 +83,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     @Override
     @Transactional
     public AppUserDTO updateConnectedAppUserData(AppUserDTO appUserDTO, Principal connectedAppUser) {
+        checkConnectedUserAuthentication(connectedAppUser);
         appUserDTOObjectsValidator.validate(appUserDTO, OnUpdate.class);
 
         log.info("update user data...");
@@ -115,6 +123,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     @Override
     @Transactional
     public void changeConnectedAppUserPassword(ChangePasswordDTO changePasswordDTO, Principal connectedAppUser) {
+        checkConnectedUserAuthentication(connectedAppUser);
         changePasswordDTOObjectsValidator.validate(changePasswordDTO);
 
         var securityAppUser = (SecurityAppUser) ((UsernamePasswordAuthenticationToken) connectedAppUser).getPrincipal();
@@ -135,23 +144,34 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 
     @Override
     @Transactional
-    public String deletedConnectedAppUser(String email, Principal connectedAppUser) {
+    public ResponseEntity<Object> deletedConnectedAppUser(String email, Principal connectedAppUser) {
+        checkConnectedUserAuthentication(connectedAppUser);
+
         var securityAppUser = (SecurityAppUser) ((UsernamePasswordAuthenticationToken) connectedAppUser).getPrincipal();
         var appUser = securityAppUser.getAppUser();
-        if (email.equals(appUser.getEmail())) {
-            try {
-                refreshTokenRepository.deleteByAppUserId(appUser.getId());
-                tokenRepository.deleteByAppUserId(appUser.getId());
-                appUserRepository.delete(appUser);
-                return String.format("User %s was deleted",email);
-            } catch (UserNotFoundException userNotFoundException) {
-                log.error("User not found. {}",userNotFoundException.getMessage());
-                throw new UserNotFoundException("User not found exception");
-            } catch (Exception e) {
-                log.error("Error deleting user. {}", e.getMessage());
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error deleting user", e);
-            }
+        if (!email.equals(appUser.getEmail())) {
+            throw new EmailMatchingException("Email does not match the logged-in user");
         }
-        return null;
+        try {
+            refreshTokenRepository.deleteByAppUserId(appUser.getId());
+            tokenRepository.deleteByAppUserId(appUser.getId());
+            appUserRepository.delete(appUser);
+            return ResponseEntity.ok(String.format("User %s was successfully deleted", email));
+        } catch (UserNotFoundException userNotFoundException) {
+            log.error("User not found. {}", userNotFoundException.getMessage());
+            throw new UserNotFoundException("User not found exception");
+        } catch (DataAccessException e) {
+            log.error("Error accessing the database: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Database access error during user deletion", e);
+        }catch (Exception e) {
+            log.error("Error deleting user. {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error deleting user", e);
+        }
+    }
+
+    private void checkConnectedUserAuthentication(Principal connectedAppUser) {
+        if (!(connectedAppUser instanceof UsernamePasswordAuthenticationToken)) {
+            throw new InvalidUserAuthenticationException("Invalid user authentication");
+        }
     }
 }

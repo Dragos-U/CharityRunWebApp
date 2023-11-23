@@ -56,9 +56,9 @@ public class AppUserController {
                 .body("The password was successfully changed.");
     }
 
-    @DeleteMapping("(/me/{email}")
+    @DeleteMapping("/me/{email}")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<String> deletedLoggedAppUser(
+    public ResponseEntity<Object> deletedLoggedAppUser(
             @PathVariable String email,
             Principal connectedAppUser) {
         log.info("Enter controller");

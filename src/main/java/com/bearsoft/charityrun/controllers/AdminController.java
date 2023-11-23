@@ -25,6 +25,5 @@ public class AdminController {
         appUserService.changeConnectedAppUserPassword(changePasswordDTO, connectedAppUser);
         return ResponseEntity.status(HttpStatus.OK).body("Password changed successfully.");
     }
-
 }
 
