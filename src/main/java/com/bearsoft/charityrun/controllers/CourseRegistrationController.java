@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/v1/course-registrations")
 @PreAuthorize("hasRole('ROLE_USER')")
@@ -24,7 +23,6 @@ public class CourseRegistrationController {
     public ResponseEntity<CourseRegistrationDTO> registerLoggedAppUserToCourse(
             @RequestBody CourseRegistrationDTO courseRegistrationDTO,
             Principal connectedAppUser ){
-        log.info(String.valueOf(courseRegistrationDTO.getTShirtSize()));
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(courseRegistrationService
                         .registerLoggedAppUserToCourse(courseRegistrationDTO,connectedAppUser));
