@@ -10,13 +10,13 @@ import lombok.*;
 @Builder
 public class AppUserDTO {
 
-    @NotEmpty(message = "User's FIRST NAME must not be empty.")
+    @NotEmpty(message = "User's FIRST NAME must not be empty.", groups = OnCreate.class)
     private String firstName;
 
-    @NotEmpty(message = "User's LAST NAME must not be empty.")
+    @NotEmpty(message = "User's LAST NAME must not be empty.", groups = OnCreate.class)
     private String lastName;
 
-    @NotEmpty(message = "User's EMAIL NAME must not be empty.")
+    @NotEmpty(message = "User's EMAIL NAME must not be empty.", groups = OnCreate.class)
     private String email;
 
     @NotEmpty(message = "User's PASSWORD must not be empty.", groups = OnCreate.class)

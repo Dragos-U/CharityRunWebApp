@@ -17,5 +17,5 @@ public class AuthenticationRequestDTO {
   private String email;
 
   @NotEmpty(message = "User's PASSWORD must not be empty.")
-  String password;
+  private String password;
 }

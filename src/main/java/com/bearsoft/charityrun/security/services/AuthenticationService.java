@@ -19,7 +19,7 @@ import com.bearsoft.charityrun.repositories.AppUserRepository;
 import com.bearsoft.charityrun.repositories.RefreshTokenRepository;
 import com.bearsoft.charityrun.repositories.TokenRepository;
 import com.bearsoft.charityrun.services.EmailService;
-import com.bearsoft.charityrun.validator.ObjectsValidator;
+import com.bearsoft.charityrun.validators.ObjectsValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -113,8 +113,8 @@ public class AuthenticationService {
             log.error("Authentication failed. Username not found. {}", usernameNotFoundException.getMessage());
             throw new UserNotFoundException("Username not found.");
         } catch (BadCredentialsException badCredentialsException) {
-            log.error("Authentication failed. Wrong password. {}", badCredentialsException.getMessage());
-            throw new PasswordDoesNotMatchException("Wrong password.");
+            log.error("Authentication failed. Wrong credentials. {}", badCredentialsException.getMessage());
+            throw new PasswordDoesNotMatchException("Wrong credentials.");
         }
 
         var appUser = appUserRepository.findAppUsersByEmail(authenticationRequestDTO.getEmail())

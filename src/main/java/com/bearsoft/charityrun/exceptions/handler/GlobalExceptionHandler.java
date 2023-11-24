@@ -1,6 +1,7 @@
 package com.bearsoft.charityrun.exceptions.handler;
 
 import com.bearsoft.charityrun.exceptions.appuser.*;
+import com.bearsoft.charityrun.exceptions.constraints.ConstraintViolationException;
 import com.bearsoft.charityrun.exceptions.course.CourseNotFoundException;
 import com.bearsoft.charityrun.exceptions.courseregistration.CourseRegistrationAlreadyExistsException;
 import com.bearsoft.charityrun.exceptions.courseregistration.CourseRegistrationNotFoundException;
@@ -10,10 +11,11 @@ import com.bearsoft.charityrun.exceptions.event.EventNotFoundException;
 import com.bearsoft.charityrun.exceptions.event.EventUpdateException;
 import com.bearsoft.charityrun.models.exception.ApiException;
 import com.bearsoft.charityrun.exceptions.course.CourseAlreadyExistException;
-import com.bearsoft.charityrun.exceptions.objectvalidator.ObjectNotValidException;
+import com.bearsoft.charityrun.exceptions.constraints.ObjectNotValidException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -30,6 +32,18 @@ public class GlobalExceptionHandler {
     private static final HttpStatus FORBIDDEN = HttpStatus.FORBIDDEN;
     private static final HttpStatus UNAUTHORIZED = HttpStatus.UNAUTHORIZED;
 
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Object> handleHttpMessageNotReadableException(HttpMessageNotReadableException httpMessageNotReadableException) {
+        log.error("HttpMessageNotReadableException occurred: {}", httpMessageNotReadableException.getMessage(), httpMessageNotReadableException);
+
+        ApiException apiException = ApiException.builder()
+                .message(httpMessageNotReadableException.getMessage())
+                .httpStatus(BAD_REQUEST)
+                .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
+                .build();
+        return new ResponseEntity<>(apiException, BAD_REQUEST);
+    }
+
     @ExceptionHandler(ObjectNotValidException.class)
     public ResponseEntity<Object> handleObjectNotValidException(ObjectNotValidException objectNotValidException) {
         log.error("ObjectNotValidException occurred: {}", objectNotValidException.getMessage(), objectNotValidException);
@@ -38,6 +52,18 @@ public class GlobalExceptionHandler {
         String combinedErrorMessage = String.join(", ", errorMessages);
         ApiException apiException = ApiException.builder()
                 .message(combinedErrorMessage)
+                .httpStatus(BAD_REQUEST)
+                .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
+                .build();
+        return new ResponseEntity<>(apiException, BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Object> handlerConstraintViolationException(ConstraintViolationException constraintViolationException){
+        log.error("ConstraintViolationException occurred: {}", constraintViolationException.getMessage(), constraintViolationException);
+
+        ApiException apiException = ApiException.builder()
+                .message(constraintViolationException.getMessage())
                 .httpStatus(BAD_REQUEST)
                 .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
                 .build();

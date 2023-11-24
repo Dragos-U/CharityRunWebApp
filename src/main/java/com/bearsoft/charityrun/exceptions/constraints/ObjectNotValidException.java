@@ -1,4 +1,4 @@
-package com.bearsoft.charityrun.exceptions.objectvalidator;
+package com.bearsoft.charityrun.exceptions.constraints;
 
 
 import lombok.Data;

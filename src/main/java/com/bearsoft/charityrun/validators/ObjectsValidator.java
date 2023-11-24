@@ -1,6 +1,6 @@
-package com.bearsoft.charityrun.validator;
+package com.bearsoft.charityrun.validators;
 
-import com.bearsoft.charityrun.exceptions.objectvalidator.ObjectNotValidException;
+import com.bearsoft.charityrun.exceptions.constraints.ObjectNotValidException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -23,7 +23,8 @@ public class ObjectsValidator<T> {
         if(!violations.isEmpty()) {
             var errorMessages = violations
                     .stream()
-                    .map(ConstraintViolation::getMessage)
+                    //.map(ConstraintViolation::getMessage)
+                    .map(violation -> violation.getPropertyPath() + ": " + violation.getMessage())
                     .collect(Collectors.toSet());
 
             log.warn("Validation failed for object: {}", objectToValidate);

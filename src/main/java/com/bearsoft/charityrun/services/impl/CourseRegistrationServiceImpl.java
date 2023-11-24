@@ -1,7 +1,6 @@
 package com.bearsoft.charityrun.services.impl;
 
 import com.bearsoft.charityrun.exceptions.appuser.InvalidUserAuthenticationException;
-import com.bearsoft.charityrun.exceptions.appuser.UserNotFoundException;
 import com.bearsoft.charityrun.exceptions.course.CourseNotFoundException;
 import com.bearsoft.charityrun.exceptions.courseregistration.CourseRegistrationAlreadyExistsException;
 import com.bearsoft.charityrun.exceptions.courseregistration.CourseRegistrationNotFoundException;
@@ -17,7 +16,7 @@ import com.bearsoft.charityrun.repositories.CourseRepository;
 import com.bearsoft.charityrun.services.BibNumberGeneratorService;
 import com.bearsoft.charityrun.services.CourseRegistrationService;
 import com.bearsoft.charityrun.services.EmailService;
-import com.bearsoft.charityrun.validator.ObjectsValidator;
+import com.bearsoft.charityrun.validators.ObjectsValidator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +52,6 @@ public class CourseRegistrationServiceImpl implements CourseRegistrationService 
                 .build();
     }
 
-    @Override
     @Transactional
     public CourseRegistrationDTO registerLoggedAppUserToCourse(CourseRegistrationDTO courseRegistrationDTO, Principal connectedAppUser) {
         courseRegistrationDTOObjectsValidator.validate(courseRegistrationDTO);

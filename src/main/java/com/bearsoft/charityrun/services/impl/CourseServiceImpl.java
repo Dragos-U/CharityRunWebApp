@@ -10,14 +10,12 @@ import com.bearsoft.charityrun.models.domain.enums.CourseType;
 import com.bearsoft.charityrun.repositories.CourseRepository;
 import com.bearsoft.charityrun.repositories.EventRepository;
 import com.bearsoft.charityrun.services.CourseService;
-import com.bearsoft.charityrun.validator.ObjectsValidator;
+import com.bearsoft.charityrun.validators.ObjectsValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalTime;
 import java.util.List;

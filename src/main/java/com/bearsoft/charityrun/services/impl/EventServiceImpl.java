@@ -7,7 +7,7 @@ import com.bearsoft.charityrun.models.domain.dtos.EventDTO;
 import com.bearsoft.charityrun.models.domain.entities.Event;
 import com.bearsoft.charityrun.repositories.EventRepository;
 import com.bearsoft.charityrun.services.EventService;
-import com.bearsoft.charityrun.validator.ObjectsValidator;
+import com.bearsoft.charityrun.validators.ObjectsValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
