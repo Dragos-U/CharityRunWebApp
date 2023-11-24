@@ -5,6 +5,8 @@ import com.bearsoft.charityrun.models.domain.dtos.ChangePasswordDTO;
 import com.bearsoft.charityrun.services.AppUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -20,6 +23,7 @@ import java.util.List;
 public class AppUserController {
 
     private final AppUserService appUserService;
+    private final MessageSource messageSource;
 
     @GetMapping("/me")
     @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
@@ -46,14 +50,17 @@ public class AppUserController {
     }
 
     @PatchMapping("/me")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
     public ResponseEntity<String> changeLoggedAppUserPassword(
+            @RequestHeader(value="Accept-language", required = false) Locale locale,
             @RequestBody ChangePasswordDTO changePasswordDTO,
             Principal connectedAppUser) {
         appUserService.changeConnectedAppUserPassword(changePasswordDTO, connectedAppUser);
+        String successMessage = messageSource.getMessage(
+                "password.change.success", null, LocaleContextHolder.getLocale());
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
-                .body("The password was successfully changed.");
+                .body(successMessage);
     }
 
     @DeleteMapping("/me/{email}")

@@ -3,6 +3,7 @@ package com.bearsoft.charityrun.controllers;
 import com.bearsoft.charityrun.models.domain.dtos.ChangePasswordDTO;
 import com.bearsoft.charityrun.services.AppUserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,13 +18,7 @@ import java.security.Principal;
 public class AdminController {
 
     private final AppUserService appUserService;
+    private final MessageSource messageSource;
 
-    @PatchMapping
-    public ResponseEntity<String> changePassword(
-            @RequestBody ChangePasswordDTO changePasswordDTO,
-            Principal connectedAppUser){
-        appUserService.changeConnectedAppUserPassword(changePasswordDTO, connectedAppUser);
-        return ResponseEntity.status(HttpStatus.OK).body("Password changed successfully.");
-    }
 }
 
