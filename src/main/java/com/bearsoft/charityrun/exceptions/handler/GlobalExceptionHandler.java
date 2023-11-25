@@ -9,6 +9,7 @@ import com.bearsoft.charityrun.exceptions.email.EmailSendingException;
 import com.bearsoft.charityrun.exceptions.event.EventAlreadyExistsException;
 import com.bearsoft.charityrun.exceptions.event.EventNotFoundException;
 import com.bearsoft.charityrun.exceptions.event.EventUpdateException;
+import com.bearsoft.charityrun.exceptions.ratelimiter.RateLimiterException;
 import com.bearsoft.charityrun.models.exception.ApiException;
 import com.bearsoft.charityrun.exceptions.course.CourseAlreadyExistException;
 import com.bearsoft.charityrun.exceptions.constraints.ObjectNotValidException;
@@ -42,6 +43,18 @@ public class GlobalExceptionHandler {
                 .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
                 .build();
         return new ResponseEntity<>(apiException, BAD_REQUEST);
+    }
+
+    @ExceptionHandler(RateLimiterException.class)
+    public ResponseEntity<Object> handleRateLimiterException(RateLimiterException limiterException) {
+        log.error("HttpMessageNotReadableException occurred: {}", limiterException.getMessage(), limiterException);
+
+        ApiException apiException = ApiException.builder()
+                .message(limiterException.getMessage())
+                .httpStatus(HttpStatus.TOO_MANY_REQUESTS)
+                .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
+                .build();
+        return new ResponseEntity<>(apiException, HttpStatus.TOO_MANY_REQUESTS);
     }
 
     @ExceptionHandler(ObjectNotValidException.class)
