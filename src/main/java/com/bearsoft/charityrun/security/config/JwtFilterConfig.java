@@ -3,12 +3,14 @@ package com.bearsoft.charityrun.security.config;
 import com.bearsoft.charityrun.models.security.SecurityAppUser;
 import com.bearsoft.charityrun.repositories.TokenRepository;
 import com.bearsoft.charityrun.security.services.JwtFilterService;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +23,7 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtFilterConfig extends OncePerRequestFilter {
 
     private final TokenRepository tokenRepository;
@@ -37,20 +40,26 @@ public class JwtFilterConfig extends OncePerRequestFilter {
             @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
-        final String authHeader = request.getHeader(AUTHORIZATION_HEADER);
-        if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
+        try {
+            final String authHeader = request.getHeader(AUTHORIZATION_HEADER);
+            if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            String jwt = authHeader.substring(BEARER_PREFIX.length());
+            String userEmail = jwtFilterService.extractUsername(jwt);
+
+            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                authenticateUser(request, userEmail, jwt);
+            }
+
             filterChain.doFilter(request, response);
-            return;
+        } catch (ExpiredJwtException e) {
+            log.error("JWT token expired: {}", e.getMessage());
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("JWT token has expired. -> ".concat(e.getMessage()));
         }
-
-        String jwt = authHeader.substring(BEARER_PREFIX.length());
-        String userEmail = jwtFilterService.extractUsername(jwt);
-
-        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            authenticateUser(request, userEmail, jwt);
-        }
-
-        filterChain.doFilter(request, response);
     }
 
     private void authenticateUser(

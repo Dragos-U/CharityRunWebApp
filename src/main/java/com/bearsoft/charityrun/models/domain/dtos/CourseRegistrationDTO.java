@@ -1,9 +1,10 @@
 package com.bearsoft.charityrun.models.domain.dtos;
 
 import com.bearsoft.charityrun.models.domain.enums.CourseType;
+import com.bearsoft.charityrun.models.domain.enums.GenreType;
 import com.bearsoft.charityrun.models.domain.enums.TShirtSize;
-import com.bearsoft.charityrun.validators.ValidEnum;
-import jakarta.validation.constraints.NotNull;
+import com.bearsoft.charityrun.validators.annotations.AgeValidation;
+import com.bearsoft.charityrun.validators.annotations.EnumValidation;
 import lombok.*;
 
 @Getter
@@ -13,9 +14,15 @@ import lombok.*;
 @Builder
 public class CourseRegistrationDTO {
 
-    @ValidEnum(message = "The T-Shirt-size is invalid.")
+    @EnumValidation
     private TShirtSize tShirtSize;
 
-    @ValidEnum(message = "The Course-Type is invalid.")
+    @EnumValidation
     private CourseType courseType;
+
+    @EnumValidation
+    private GenreType genre;
+
+    @AgeValidation(minAge = 14, message = "Invalid age.")
+    private int age;
 }

@@ -1,5 +1,6 @@
-package com.bearsoft.charityrun.validators;
+package com.bearsoft.charityrun.validators.annotations;
 
+import com.bearsoft.charityrun.validators.EnumValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
@@ -9,7 +10,7 @@ import java.lang.annotation.*;
 @Constraint(validatedBy = EnumValidator.class)
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ValidEnum {
+public @interface EnumValidation {
 
     String message() default "Invalid value";
     Class<?>[] groups() default {};

@@ -58,7 +58,6 @@ public class AuthenticationService {
     private final ObjectsValidator<AuthenticationRequestDTO> authenticationRequestDTOObjectsValidator;
 
     private static final String BEARER_PREFIX = "Bearer ";
-    private static final String AUTHORIZATION_HEADER = "Authorization";
 
     @Value("${application.security.jwt.refresh-token.expiration}")
     private long refreshExpiration;

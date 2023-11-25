@@ -13,13 +13,13 @@ import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/v1/course-registrations")
-@PreAuthorize("hasRole('ROLE_USER')")
 @RequiredArgsConstructor
 public class CourseRegistrationController {
 
     private final CourseRegistrationService courseRegistrationService;
 
     @PostMapping
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<CourseRegistrationDTO> registerLoggedAppUserToCourse(
             @RequestBody CourseRegistrationDTO courseRegistrationDTO,
             Principal connectedAppUser ){
@@ -29,12 +29,14 @@ public class CourseRegistrationController {
     }
 
     @DeleteMapping
+    @PreAuthorize("hasRole('ROLE_PARTICIPANT')")
     public ResponseEntity<String> unregisterLoggedAppUserFromCourse(Principal connectedAppUser){
         courseRegistrationService.unregisterLoggedAppUserFromCourse(connectedAppUser);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body("Participant successfully unregistered.");
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ROLE_PARTICIPANT')")
     public ResponseEntity<CourseRegistrationDTO> getLoggedAppUserRegistration(Principal connectedAppUser){
         return ResponseEntity.status(HttpStatus.OK)
                 .body(courseRegistrationService

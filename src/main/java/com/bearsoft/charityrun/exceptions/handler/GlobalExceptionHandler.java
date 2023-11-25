@@ -150,7 +150,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CourseNotFoundException.class)
     public ResponseEntity<Object> handlerCourseNotFoundException(CourseNotFoundException courseNotFoundException) {
-        log.error("CourseNotFoundException occurred: {}", courseNotFoundException.getMessage());
         ApiException apiException = ApiException.builder()
                 .message(courseNotFoundException.getMessage())
                 .httpStatus(BAD_REQUEST)
@@ -161,7 +160,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CourseRegistrationAlreadyExistsException.class)
     public ResponseEntity<Object> handlerCourseRegistrationAlreadyExistsException(CourseRegistrationAlreadyExistsException courseRegistrationAlreadyExistsException) {
-        log.error("CourseRegistrationAlreadyExistsException occurred: {}", courseRegistrationAlreadyExistsException.getMessage());
         ApiException apiException = ApiException.builder()
                 .message(courseRegistrationAlreadyExistsException.getMessage())
                 .httpStatus(CONFLICT)
@@ -172,7 +170,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CourseRegistrationNotFoundException.class)
     public ResponseEntity<Object> handlerCourseRegistrationNotFoundException(CourseRegistrationNotFoundException courseRegistrationNotFoundException) {
-        log.error("CourseRegistrationNotFound occurred: {}", courseRegistrationNotFoundException.getMessage());
         ApiException apiException = ApiException.builder()
                 .message(courseRegistrationNotFoundException.getMessage())
                 .httpStatus(BAD_REQUEST)

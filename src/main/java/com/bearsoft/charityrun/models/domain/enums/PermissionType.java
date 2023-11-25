@@ -17,7 +17,7 @@ public enum PermissionType {
     USER_CREATE("user:create"),
     USER_DELETE("user:delete"),
 
-    PARTICIPANT_READ("user:read") ;
+    PARTICIPANT_READ("participant:read") ;
 
     private final String permission;
 }

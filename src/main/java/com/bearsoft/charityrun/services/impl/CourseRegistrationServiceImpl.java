@@ -8,11 +8,14 @@ import com.bearsoft.charityrun.models.domain.dtos.CourseRegistrationDTO;
 import com.bearsoft.charityrun.models.domain.entities.AppUser;
 import com.bearsoft.charityrun.models.domain.entities.Course;
 import com.bearsoft.charityrun.models.domain.entities.CourseRegistration;
+import com.bearsoft.charityrun.models.domain.entities.Role;
 import com.bearsoft.charityrun.models.domain.enums.CourseType;
+import com.bearsoft.charityrun.models.domain.enums.RoleType;
 import com.bearsoft.charityrun.models.security.SecurityAppUser;
 import com.bearsoft.charityrun.repositories.AppUserRepository;
 import com.bearsoft.charityrun.repositories.CourseRegistrationRepository;
 import com.bearsoft.charityrun.repositories.CourseRepository;
+import com.bearsoft.charityrun.repositories.RoleRepository;
 import com.bearsoft.charityrun.services.BibNumberGeneratorService;
 import com.bearsoft.charityrun.services.CourseRegistrationService;
 import com.bearsoft.charityrun.services.EmailService;
@@ -32,6 +35,7 @@ import java.util.Set;
 public class CourseRegistrationServiceImpl implements CourseRegistrationService {
 
     private final EmailService emailService;
+    private final RoleRepository roleRepository;
     private final AppUserRepository appUserRepository;
     private final CourseRepository courseRepository;
     private final BibNumberGeneratorService bibNumberGeneratorService;
@@ -43,12 +47,13 @@ public class CourseRegistrationServiceImpl implements CourseRegistrationService 
     public CourseRegistrationDTO getLoggedAppUserRegistration(Principal connectedAppUser) {
         SecurityAppUser securityAppUser = extractUserFromPrincipal(connectedAppUser);
         var appUser = securityAppUser.getAppUser();
-
         validateCourseRegistrationExistence(appUser);
 
         return CourseRegistrationDTO.builder()
                 .courseType(appUser.getCourseRegistration().getCourse().getCourseType())
                 .tShirtSize(appUser.getCourseRegistration().getTShirtSize())
+                .genre(appUser.getCourseRegistration().getGenre())
+                .age(appUser.getCourseRegistration().getAge())
                 .build();
     }
 
@@ -58,24 +63,19 @@ public class CourseRegistrationServiceImpl implements CourseRegistrationService 
 
         SecurityAppUser securityAppUser = extractUserFromPrincipal(connectedAppUser);
         var appUser = securityAppUser.getAppUser();
-
         validateCourseRegistrationNotExistence(appUser);
 
-        var tshirtSize = courseRegistrationDTO.getTShirtSize();
         var courseType = courseRegistrationDTO.getCourseType();
-        var course = getCourseByType(courseType);
-
-        int bibNumber = generateBib(courseType);
-
         CourseRegistration courseRegistration = CourseRegistration.builder()
-                .course(course)
-                .tShirtSize(tshirtSize)
-                .bib(bibNumber)
+                .course(getCourseByType(courseType))
+                .tShirtSize(courseRegistrationDTO.getTShirtSize())
+                .genre(courseRegistrationDTO.getGenre())
+                .bib(generateBib(courseType))
+                .age(courseRegistrationDTO.getAge())
                 .appUser(appUser)
                 .build();
         appUser.setCourseRegistration(courseRegistration);
-
-        appUserRepository.save(appUser);
+        addRoleToUser(appUser);
         courseRegistrationRepository.save(courseRegistration);
 
         emailService.sendCourseRegistrationEmail(courseRegistrationDTO, appUser, "Course Registration Confirmation.");
@@ -92,8 +92,8 @@ public class CourseRegistrationServiceImpl implements CourseRegistrationService 
         validateCourseRegistrationExistence(appUser);
         Long courseRegistrationId = appUser.getCourseRegistration().getId();
         appUser.setCourseRegistration(null);
+        removeRoleFromUser(appUser);
 
-        appUserRepository.save(appUser);
         courseRegistrationRepository.deleteById(courseRegistrationId);
     }
 
@@ -120,7 +120,7 @@ public class CourseRegistrationServiceImpl implements CourseRegistrationService 
         if (appUser.getCourseRegistration() == null) {
             log.error("Course registration not found for user: {}", appUser.getEmail());
             throw new CourseRegistrationNotFoundException(
-                    String.format("Course registration for user : %s , not found", appUser.getEmail()));
+                    String.format("Course registration not found for user : %s", appUser.getEmail()));
         }
     }
 
@@ -136,5 +136,26 @@ public class CourseRegistrationServiceImpl implements CourseRegistrationService 
             bibNumber = bibNumberGeneratorService.generateBibNumber(courseType);
         }
         return bibNumber;
+    }
+
+    private void addRoleToUser(AppUser appUser) {
+        Role roleToAdd = Role.builder()
+                .roleType(RoleType.ROLE_PARTICIPANT)
+                .build();
+        appUser.getRoles().add(roleToAdd);
+        appUserRepository.save(appUser);
+    }
+
+    private void removeRoleFromUser(AppUser appUser) {
+        Role existingRole = appUser.getRoles().stream()
+                .filter(role -> role.getRoleType() == RoleType.ROLE_PARTICIPANT)
+                .findFirst()
+                .orElse(null);
+
+        if (existingRole != null) {
+            appUser.getRoles().remove(existingRole);
+            appUserRepository.save(appUser);
+            roleRepository.delete(existingRole);
+        }
     }
 }
