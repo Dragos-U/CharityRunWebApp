@@ -3,7 +3,7 @@ package com.bearsoft.charityrun.services.impl;
 import com.bearsoft.charityrun.exceptions.appuser.EmailMatchingException;
 import com.bearsoft.charityrun.exceptions.appuser.InvalidUserAuthenticationException;
 import com.bearsoft.charityrun.exceptions.appuser.PasswordDoesNotMatchException;
-import com.bearsoft.charityrun.exceptions.appuser.UserNotFoundException;
+import com.bearsoft.charityrun.exceptions.appuser.AppUserNotFoundException;
 import com.bearsoft.charityrun.models.domain.entities.AppUser;
 import com.bearsoft.charityrun.models.security.SecurityAppUser;
 import com.bearsoft.charityrun.models.domain.dtos.AppUserDTO;
@@ -18,7 +18,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -50,10 +49,23 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
         var appUser = appUserRepository.findAppUsersByEmail(email);
 
         return appUser.map(SecurityAppUser::new)
-                .orElseThrow(() -> new UsernameNotFoundException("User email not found."));
+                .orElseThrow(() -> new AppUserNotFoundException(String.format("Username %s not found.",email)));
     }
 
+    @Override
+    @Transactional
+    public AppUserDTO getAppUserByUsername(String email){
+        AppUser appUser = appUserRepository.findAppUsersByEmail(email)
+                .orElseThrow(() -> new AppUserNotFoundException(String.format("User with email: %s not found", email)));
 
+        return AppUserDTO.builder()
+                .firstName(appUser.getFirstName())
+                .lastName(appUser.getLastName())
+                .email(appUser.getEmail())
+                .address(appUser.getAddress())
+                .courseRegistration(appUser.getCourseRegistration())
+                .build();
+    }
 
     @Override
     @Transactional
@@ -73,7 +85,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     @Override
     public List<AppUserDTO> getAllAppUsers() {
         List<AppUser> appUsers = appUserRepository.findAllUsers()
-                .orElseThrow(() -> new UserNotFoundException("Users not found."));
+                .orElseThrow(() -> new AppUserNotFoundException("Users not found."));
         return appUsers
                 .stream()
                 .map(appUser -> objectMapper.convertValue(appUser, AppUserDTO.class))
@@ -109,7 +121,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
         appUserRepository.save(appUser);
         log.info("User saved to database.");
         appUser = appUserRepository.findAppUsersByEmail(appUserDTO.getEmail())
-                .orElseThrow(() -> new UserNotFoundException(String.format("User with email: %s not found", appUserDTO.getEmail())));
+                .orElseThrow(() -> new AppUserNotFoundException(String.format("User with email: %s not found", appUserDTO.getEmail())));
 
         return AppUserDTO.builder()
                 .firstName(appUser.getFirstName())
@@ -144,7 +156,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 
     @Override
     @Transactional
-    public ResponseEntity<Object> deletedConnectedAppUser(String email, Principal connectedAppUser) {
+    public String deletedConnectedAppUser(String email, Principal connectedAppUser) {
         checkConnectedUserAuthentication(connectedAppUser);
 
         var securityAppUser = (SecurityAppUser) ((UsernamePasswordAuthenticationToken) connectedAppUser).getPrincipal();
@@ -152,26 +164,34 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
         if (!email.equals(appUser.getEmail())) {
             throw new EmailMatchingException("Email does not match the logged-in user");
         }
-        try {
-            refreshTokenRepository.deleteByAppUserId(appUser.getId());
-            tokenRepository.deleteByAppUserId(appUser.getId());
-            appUserRepository.delete(appUser);
-            return ResponseEntity.ok(String.format("User %s was successfully deleted", email));
-        } catch (UserNotFoundException userNotFoundException) {
-            log.error("User not found. {}", userNotFoundException.getMessage());
-            throw new UserNotFoundException("User not found exception");
-        } catch (DataAccessException e) {
-            log.error("Error accessing the database: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Database access error during user deletion", e);
-        }catch (Exception e) {
-            log.error("Error deleting user. {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error deleting user", e);
-        }
+        return deleteAppUserCommon(appUser, email);
+    }
+
+    @Override
+    @Transactional
+    public String deleteAppUserByEmail(String email){
+        AppUser appUser = appUserRepository.findAppUsersByEmail(email)
+                .orElseThrow(() -> new AppUserNotFoundException(String.format("User with email: %s not found", email)));
+
+        return deleteAppUserCommon(appUser, email);
     }
 
     private void checkConnectedUserAuthentication(Principal connectedAppUser) {
         if (!(connectedAppUser instanceof UsernamePasswordAuthenticationToken)) {
             throw new InvalidUserAuthenticationException("Invalid user authentication");
+        }
+    }
+    private String deleteAppUserCommon(AppUser appUser, String email) {
+        try {
+            refreshTokenRepository.deleteByAppUserId(appUser.getId());
+            tokenRepository.deleteByAppUserId(appUser.getId());
+            appUserRepository.delete(appUser);
+            return String.format("User %s was successfully deleted", email);
+        } catch (AppUserNotFoundException appUserNotFoundException) {
+            log.error("User not found. {}", appUserNotFoundException.getMessage());
+            throw new AppUserNotFoundException("User not found exception");
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error during user deletion", e);
         }
     }
 }

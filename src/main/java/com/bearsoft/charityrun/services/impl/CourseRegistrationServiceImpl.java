@@ -52,7 +52,7 @@ public class CourseRegistrationServiceImpl implements CourseRegistrationService 
         return CourseRegistrationDTO.builder()
                 .courseType(appUser.getCourseRegistration().getCourse().getCourseType())
                 .tShirtSize(appUser.getCourseRegistration().getTShirtSize())
-                .genre(appUser.getCourseRegistration().getGenre())
+                .gender(appUser.getCourseRegistration().getGender())
                 .age(appUser.getCourseRegistration().getAge())
                 .build();
     }
@@ -69,7 +69,7 @@ public class CourseRegistrationServiceImpl implements CourseRegistrationService 
         CourseRegistration courseRegistration = CourseRegistration.builder()
                 .course(getCourseByType(courseType))
                 .tShirtSize(courseRegistrationDTO.getTShirtSize())
-                .genre(courseRegistrationDTO.getGenre())
+                .gender(courseRegistrationDTO.getGender())
                 .bib(generateBib(courseType))
                 .age(courseRegistrationDTO.getAge())
                 .appUser(appUser)

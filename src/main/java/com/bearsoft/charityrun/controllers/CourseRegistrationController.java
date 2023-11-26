@@ -32,7 +32,8 @@ public class CourseRegistrationController {
     @PreAuthorize("hasRole('ROLE_PARTICIPANT')")
     public ResponseEntity<String> unregisterLoggedAppUserFromCourse(Principal connectedAppUser){
         courseRegistrationService.unregisterLoggedAppUserFromCourse(connectedAppUser);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body("Participant successfully unregistered.");
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
+                .body("Participant successfully unregistered.");
     }
 
     @GetMapping

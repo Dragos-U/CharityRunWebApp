@@ -1,6 +1,6 @@
 package com.bearsoft.charityrun.models.domain.entities;
 
-import com.bearsoft.charityrun.models.domain.enums.GenreType;
+import com.bearsoft.charityrun.models.domain.enums.GenderType;
 import com.bearsoft.charityrun.models.domain.enums.TShirtSize;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -29,7 +29,7 @@ public class CourseRegistration {
     private TShirtSize tShirtSize;
 
     @Enumerated(EnumType.STRING)
-    private GenreType genre;
+    private GenderType gender;
 
     @OneToMany (mappedBy = "courseRegistration",fetch = FetchType.EAGER )
     @JsonManagedReference("courseRegistration-trainingPlan")

@@ -81,11 +81,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiException, FORBIDDEN);
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<Object> handlerUserNotFoundException(UserNotFoundException userNotFoundException) {
-        log.error("UserNotFoundException occurred: {}", userNotFoundException.getMessage(), userNotFoundException);
+    @ExceptionHandler(AppUserNotFoundException.class)
+    public ResponseEntity<Object> handlerUserNotFoundException(AppUserNotFoundException appUserNotFoundException) {
+        log.error("UserNotFoundException occurred: {}", appUserNotFoundException.getMessage(), appUserNotFoundException);
         ApiException apiException = ApiException.builder()
-                .message(userNotFoundException.getMessage())
+                .message(appUserNotFoundException.getMessage())
                 .httpStatus(BAD_REQUEST)
                 .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
                 .build();
@@ -133,7 +133,6 @@ public class GlobalExceptionHandler {
                 .httpStatus(BAD_REQUEST)
                 .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
                 .build();
-
         return new ResponseEntity<>(apiException, BAD_REQUEST);
     }
 

@@ -2,7 +2,7 @@ package com.bearsoft.charityrun.security.services;
 
 import com.bearsoft.charityrun.exceptions.appuser.AppUserAlreadyExistsException;
 import com.bearsoft.charityrun.exceptions.appuser.PasswordDoesNotMatchException;
-import com.bearsoft.charityrun.exceptions.appuser.UserNotFoundException;
+import com.bearsoft.charityrun.exceptions.appuser.AppUserNotFoundException;
 import com.bearsoft.charityrun.exceptions.email.EmailSendingException;
 import com.bearsoft.charityrun.models.domain.dtos.AuthenticationRequestDTO;
 import com.bearsoft.charityrun.models.domain.dtos.AuthenticationResponseDTO;
@@ -110,14 +110,14 @@ public class AuthenticationService {
                             authenticationRequestDTO.getPassword()));
         } catch (UsernameNotFoundException usernameNotFoundException) {
             log.error("Authentication failed. Username not found. {}", usernameNotFoundException.getMessage());
-            throw new UserNotFoundException("Username not found.");
+            throw new AppUserNotFoundException("Username not found.");
         } catch (BadCredentialsException badCredentialsException) {
             log.error("Authentication failed. Wrong credentials. {}", badCredentialsException.getMessage());
             throw new PasswordDoesNotMatchException("Wrong credentials.");
         }
 
         var appUser = appUserRepository.findAppUsersByEmail(authenticationRequestDTO.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("User not found."));
+                .orElseThrow(() -> new AppUserNotFoundException("User not found."));
 
         SecurityAppUser securityAppUser = new SecurityAppUser(appUser);
         var jwtToken = jwtFilterService.generateToken(securityAppUser);

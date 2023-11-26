@@ -68,22 +68,23 @@ public class AppUserController {
     public ResponseEntity<Object> deletedLoggedAppUser(
             @PathVariable String email,
             Principal connectedAppUser) {
-        log.info("Enter controller");
-        return ResponseEntity.status(HttpStatus.OK)
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .body(appUserService.deletedConnectedAppUser(email, connectedAppUser));
     }
 
-    @GetMapping("/users/{email}")
+    @GetMapping("/{email}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<AppUserDTO> getUserByEmail(
             @PathVariable String email){
-        return null;
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(appUserService.getAppUserByUsername(email));
     }
 
-    @DeleteMapping("/users/{email}")
+    @DeleteMapping("/{email}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<AppUserDTO> deleteUserByEmail(
+    public ResponseEntity<String> deleteUserByEmail(
             @PathVariable String email){
-        return null;
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .body(appUserService.deleteAppUserByEmail(email));
     }
 }

@@ -35,9 +35,7 @@ public class SecurityAppUser implements UserDetails {
             RoleType roleType = role.getRoleType();
 
             authorities.add(new SimpleGrantedAuthority(roleType.name()));
-            roleType.getPermissionTypes().forEach(permissionType ->
-                    authorities.add(new SimpleGrantedAuthority(permissionType.name()))
-            );
+
         }
         return authorities;
     }

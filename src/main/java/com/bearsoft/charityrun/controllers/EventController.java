@@ -17,29 +17,34 @@ public class EventController {
     private final EventService eventService;
 
     @GetMapping("/{eventID}")
+    @PreAuthorize("hasRole('ROLE_PARTICIPANT')")
     public ResponseEntity<EventDTO> getEventByID(
             @PathVariable Long eventID){
         EventDTO eventDTO = eventService.getEventById(eventID);
-        return ResponseEntity.status(HttpStatus.OK).body(eventDTO);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(eventDTO);
     }
 
     @PostMapping
     public ResponseEntity<EventDTO> createEvent(
             @RequestBody EventDTO eventDTO){
-        return ResponseEntity.status(HttpStatus.CREATED).body(eventService.createEvent(eventDTO));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(eventService.createEvent(eventDTO));
     }
 
     @PutMapping("/{eventID}")
     public ResponseEntity<EventDTO> updateEventByID(
             @PathVariable Long eventID,
             @RequestBody EventDTO eventDTO){
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(eventService.updateEventByID(eventID, eventDTO));
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
+                .body(eventService.updateEventByID(eventID, eventDTO));
     }
 
     @DeleteMapping
     public ResponseEntity<String> deleteEventByID(
             @RequestParam(required = true) Long eventID,
             @RequestParam(required = true, defaultValue = "false") String deleteApproval){
-        return ResponseEntity.status(HttpStatus.OK).body(eventService.deleteEvent(eventID, deleteApproval));
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .body(eventService.deleteEvent(eventID, deleteApproval));
     }
 }

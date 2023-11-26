@@ -15,13 +15,14 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ROLE_ADMIN')")
 @RequestMapping("/api/v1/courses")
 public class CourseController {
 
     private final CourseService courseService;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_USER','ROLE_PARTICIPANT')")
+    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_PARTICIPANT')")
     public ResponseEntity<List<CourseDTO>> getAllCourses(
             @RequestParam(required = false, defaultValue = "1") Long eventID
     ) {
@@ -29,7 +30,6 @@ public class CourseController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<CourseDTO> createCourse(
             @RequestParam(required = false, defaultValue = "1") Long eventID,
             @RequestBody CourseDTO courseDTO) {
@@ -37,7 +37,6 @@ public class CourseController {
     }
 
     @PatchMapping()
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<CourseDTO> updateCourseStartTime(
             @RequestParam(required = false, defaultValue = "1") Long eventID,
             @RequestBody CourseDTO courseDTO) {
@@ -46,7 +45,6 @@ public class CourseController {
     }
 
     @DeleteMapping
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<String> deleteCourseByType(
             @RequestParam(required = true, defaultValue = "1") Long eventID,
             @RequestParam(required = true) CourseType courseType,

@@ -11,10 +11,16 @@ import java.util.List;
 public interface AppUserService {
 
     SecurityAppUser loadUserByUsername(String email);
-//    AppUserDTO getAppUserByUsername(String email);
+    AppUserDTO getAppUserByUsername(String email);
+
     void changeConnectedAppUserPassword(ChangePasswordDTO changePasswordDTO, Principal connectedAppUser);
+
     AppUserDTO getConnectedAppUserData(Principal connectedAppUser);
+
     public AppUserDTO updateConnectedAppUserData(AppUserDTO appUserDTO, Principal connectedAppUser);
-    ResponseEntity<Object> deletedConnectedAppUser(String email, Principal connectedAppUser);
+    String deleteAppUserByEmail(String email);
+
+    String deletedConnectedAppUser(String email, Principal connectedAppUser);
+
     List<AppUserDTO> getAllAppUsers();
 }
