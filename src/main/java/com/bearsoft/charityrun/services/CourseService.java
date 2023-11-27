@@ -10,5 +10,5 @@ public interface CourseService {
     CourseDTO createCourse(CourseDTO courseDTO, Long eventID);
     CourseDTO updateCourseStartTime(CourseDTO courseDTO, Long eventID);
     List<CourseDTO> getCourseByEventId(Long eventID);
-    boolean deleteEventCourseByType(Long eventID, CourseType courseType, String deleteApproval);
+    void deleteEventCourseByType(Long eventID, CourseType courseType, String deleteApproval);
 }

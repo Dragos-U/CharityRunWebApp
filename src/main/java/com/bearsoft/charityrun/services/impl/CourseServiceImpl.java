@@ -91,7 +91,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     @Transactional
-    public boolean deleteEventCourseByType(Long eventID, CourseType courseType, String deleteApproval) {
+    public void deleteEventCourseByType(Long eventID, CourseType courseType, String deleteApproval) {
         if (deleteApproval.equals("true")) {
             try {
                 courseRepository
@@ -99,12 +99,10 @@ public class CourseServiceImpl implements CourseService {
                         .orElseThrow(() -> new CourseNotFoundException(String.format("Course %s not found.", courseType)));
                 courseRepository.deleteByCourseType(courseType);
                 log.info("Course deleted successfully.");
-                return true;
             } catch (EventNotFoundException e) {
                 log.error("Event not found.");
                 throw new EventNotFoundException("Event not found");
             }
         }
-        return false;
     }
 }

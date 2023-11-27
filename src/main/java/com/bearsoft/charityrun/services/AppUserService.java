@@ -18,9 +18,9 @@ public interface AppUserService {
     AppUserDTO getConnectedAppUserData(Principal connectedAppUser);
 
     public AppUserDTO updateConnectedAppUserData(AppUserDTO appUserDTO, Principal connectedAppUser);
-    String deleteAppUserByEmail(String email);
+    void deleteAppUserByEmail(String email);
 
-    String deletedConnectedAppUser(String email, Principal connectedAppUser);
+    void deletedConnectedAppUser(String email, Principal connectedAppUser);
 
     List<AppUserDTO> getAllAppUsers();
 }

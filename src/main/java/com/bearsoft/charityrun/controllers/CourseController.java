@@ -45,11 +45,11 @@ public class CourseController {
     }
 
     @DeleteMapping
-    public ResponseEntity<String> deleteCourseByType(
+    public ResponseEntity<Void> deleteCourseByType(
             @RequestParam(required = true, defaultValue = "1") Long eventID,
             @RequestParam(required = true) CourseType courseType,
             @RequestParam(required = true, defaultValue = "false") String deleteApproval) {
-        boolean isCourseDeleted = courseService.deleteEventCourseByType(eventID, courseType, deleteApproval);
-        return ResponseEntity.status(HttpStatus.OK).body("Event deleted: " + isCourseDeleted);
+        courseService.deleteEventCourseByType(eventID, courseType, deleteApproval);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

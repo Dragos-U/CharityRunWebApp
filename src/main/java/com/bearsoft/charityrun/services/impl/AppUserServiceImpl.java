@@ -156,7 +156,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 
     @Override
     @Transactional
-    public String deletedConnectedAppUser(String email, Principal connectedAppUser) {
+    public void deletedConnectedAppUser(String email, Principal connectedAppUser) {
         checkConnectedUserAuthentication(connectedAppUser);
 
         var securityAppUser = (SecurityAppUser) ((UsernamePasswordAuthenticationToken) connectedAppUser).getPrincipal();
@@ -164,16 +164,16 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
         if (!email.equals(appUser.getEmail())) {
             throw new EmailMatchingException("Email does not match the logged-in user");
         }
-        return deleteAppUserCommon(appUser, email);
+        deleteAppUserCommon(appUser, email);
     }
 
     @Override
     @Transactional
-    public String deleteAppUserByEmail(String email){
+    public void deleteAppUserByEmail(String email){
         AppUser appUser = appUserRepository.findAppUsersByEmail(email)
                 .orElseThrow(() -> new AppUserNotFoundException(String.format("User with email: %s not found", email)));
 
-        return deleteAppUserCommon(appUser, email);
+        deleteAppUserCommon(appUser, email);
     }
 
     private void checkConnectedUserAuthentication(Principal connectedAppUser) {
@@ -181,12 +181,11 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
             throw new InvalidUserAuthenticationException("Invalid user authentication");
         }
     }
-    private String deleteAppUserCommon(AppUser appUser, String email) {
+    private void deleteAppUserCommon(AppUser appUser, String email) {
         try {
             refreshTokenRepository.deleteByAppUserId(appUser.getId());
             tokenRepository.deleteByAppUserId(appUser.getId());
             appUserRepository.delete(appUser);
-            return String.format("User %s was successfully deleted", email);
         } catch (AppUserNotFoundException appUserNotFoundException) {
             log.error("User not found. {}", appUserNotFoundException.getMessage());
             throw new AppUserNotFoundException("User not found exception");

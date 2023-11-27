@@ -41,10 +41,11 @@ public class EventController {
     }
 
     @DeleteMapping
-    public ResponseEntity<String> deleteEventByID(
+    public ResponseEntity<Void> deleteEventByID(
             @RequestParam(required = true) Long eventID,
             @RequestParam(required = true, defaultValue = "false") String deleteApproval){
+        eventService.deleteEvent(eventID, deleteApproval);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                .body(eventService.deleteEvent(eventID, deleteApproval));
+                .build();
     }
 }

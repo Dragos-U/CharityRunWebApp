@@ -1,5 +1,6 @@
 package com.bearsoft.charityrun.controllers;
 
+import com.bearsoft.charityrun.aspects.RateLimited;
 import com.bearsoft.charityrun.models.domain.dtos.AppUserDTO;
 import com.bearsoft.charityrun.models.domain.dtos.ChangePasswordDTO;
 import com.bearsoft.charityrun.services.AppUserService;
@@ -25,6 +26,7 @@ public class AppUserController {
     private final AppUserService appUserService;
     private final MessageSource messageSource;
 
+    @RateLimited
     @GetMapping("/me")
     @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
     public ResponseEntity<AppUserDTO> getLoggedAppUserData(Principal connectedAppUser) {
@@ -65,11 +67,12 @@ public class AppUserController {
 
     @DeleteMapping("/me/{email}")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<Object> deletedLoggedAppUser(
+    public ResponseEntity<Void> deletedLoggedAppUser(
             @PathVariable String email,
             Principal connectedAppUser) {
+        appUserService.deletedConnectedAppUser(email, connectedAppUser);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                .body(appUserService.deletedConnectedAppUser(email, connectedAppUser));
+                .build();
     }
 
     @GetMapping("/{email}")
@@ -82,9 +85,10 @@ public class AppUserController {
 
     @DeleteMapping("/{email}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<String> deleteUserByEmail(
+    public ResponseEntity<Void> deleteUserByEmail(
             @PathVariable String email){
+        appUserService.deleteAppUserByEmail(email);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                .body(appUserService.deleteAppUserByEmail(email));
+                .build();
     }
 }
