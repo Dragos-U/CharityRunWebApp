@@ -22,15 +22,15 @@ public class CourseRegistrationController {
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<CourseRegistrationDTO> registerLoggedAppUserToCourse(
             @RequestBody CourseRegistrationDTO courseRegistrationDTO,
-            Principal connectedAppUser ){
+            Principal connectedAppUser) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(courseRegistrationService
-                        .registerLoggedAppUserToCourse(courseRegistrationDTO,connectedAppUser));
+                        .registerLoggedAppUserToCourse(courseRegistrationDTO, connectedAppUser));
     }
 
     @DeleteMapping
     @PreAuthorize("hasRole('ROLE_PARTICIPANT')")
-    public ResponseEntity<String> unregisterLoggedAppUserFromCourse(Principal connectedAppUser){
+    public ResponseEntity<String> unregisterLoggedAppUserFromCourse(Principal connectedAppUser) {
         courseRegistrationService.unregisterLoggedAppUserFromCourse(connectedAppUser);
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body("Participant successfully unregistered.");
@@ -38,7 +38,7 @@ public class CourseRegistrationController {
 
     @GetMapping
     @PreAuthorize("hasRole('ROLE_PARTICIPANT')")
-    public ResponseEntity<CourseRegistrationDTO> getLoggedAppUserRegistration(Principal connectedAppUser){
+    public ResponseEntity<CourseRegistrationDTO> getLoggedAppUserRegistration(Principal connectedAppUser) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(courseRegistrationService
                         .getLoggedAppUserRegistration(connectedAppUser));

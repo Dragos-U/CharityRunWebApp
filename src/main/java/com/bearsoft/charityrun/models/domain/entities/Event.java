@@ -27,5 +27,4 @@ public class Event {
     @OneToMany(mappedBy = "event")
     @JsonManagedReference("event-courses")
     private List<Course> courses;
-
 }

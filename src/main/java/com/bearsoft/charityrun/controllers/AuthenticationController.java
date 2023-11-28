@@ -22,13 +22,13 @@ public class AuthenticationController {
 
     @PostMapping("/registration")
     public ResponseEntity<AuthenticationResponseDTO> registerAppUser(
-            @RequestBody AppUserDTO appUserDTO){
+            @RequestBody AppUserDTO appUserDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(authenticationService.registerAppUser(appUserDTO));
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponseDTO> loginAppUser(
-            @RequestBody AuthenticationRequestDTO authRequestDTO){
+            @RequestBody AuthenticationRequestDTO authRequestDTO) {
         return ResponseEntity.ok(authenticationService.loginAppUser(authRequestDTO));
     }
 

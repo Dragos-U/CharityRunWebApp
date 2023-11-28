@@ -23,7 +23,7 @@ public class EventDTO {
     private String venue;
 
     @NotNull(message = "Event's DATE must not be null.")
-    @Future(message="Event date must be set in the future.")
+    @Future(message = "Event date must be set in the future.")
     private LocalDate date;
 
     private List<Course> courses;

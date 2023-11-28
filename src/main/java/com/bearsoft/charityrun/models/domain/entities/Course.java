@@ -32,7 +32,7 @@ public class Course {
     private Set<CourseRegistration> courseRegistrations;
 
     @ManyToOne
-    @JoinColumn(name="event_id")
+    @JoinColumn(name = "event_id")
     @JsonBackReference("event-courses")
     private Event event;
 

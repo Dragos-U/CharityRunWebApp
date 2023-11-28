@@ -19,7 +19,7 @@ public class EventController {
     @GetMapping("/{eventID}")
     @PreAuthorize("hasRole('ROLE_PARTICIPANT')")
     public ResponseEntity<EventDTO> getEventByID(
-            @PathVariable Long eventID){
+            @PathVariable Long eventID) {
         EventDTO eventDTO = eventService.getEventById(eventID);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(eventDTO);
@@ -27,7 +27,7 @@ public class EventController {
 
     @PostMapping
     public ResponseEntity<EventDTO> createEvent(
-            @RequestBody EventDTO eventDTO){
+            @RequestBody EventDTO eventDTO) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(eventService.createEvent(eventDTO));
     }
@@ -35,7 +35,7 @@ public class EventController {
     @PutMapping("/{eventID}")
     public ResponseEntity<EventDTO> updateEventByID(
             @PathVariable Long eventID,
-            @RequestBody EventDTO eventDTO){
+            @RequestBody EventDTO eventDTO) {
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(eventService.updateEventByID(eventID, eventDTO));
     }
@@ -43,7 +43,7 @@ public class EventController {
     @DeleteMapping
     public ResponseEntity<Void> deleteEventByID(
             @RequestParam(required = true) Long eventID,
-            @RequestParam(required = true, defaultValue = "false") String deleteApproval){
+            @RequestParam(required = true, defaultValue = "false") String deleteApproval) {
         eventService.deleteEvent(eventID, deleteApproval);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .build();

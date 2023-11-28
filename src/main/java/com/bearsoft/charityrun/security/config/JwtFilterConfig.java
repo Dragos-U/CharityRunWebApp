@@ -1,7 +1,5 @@
 package com.bearsoft.charityrun.security.config;
 
-import com.bearsoft.charityrun.models.security.SecurityAppUser;
-import com.bearsoft.charityrun.repositories.TokenRepository;
 import com.bearsoft.charityrun.security.services.JwtFilterService;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -26,12 +24,11 @@ import java.io.IOException;
 @Slf4j
 public class JwtFilterConfig extends OncePerRequestFilter {
 
-    private final TokenRepository tokenRepository;
     private final JwtFilterService jwtFilterService;
     private final UserDetailsService userDetailsService;
 
     private static final String BEARER_PREFIX = "Bearer ";
-    private static final String AUTHORIZATION_HEADER  = "Authorization";
+    private static final String AUTHORIZATION_HEADER = "Authorization";
 
     @Override
     protected void doFilterInternal(
@@ -51,7 +48,7 @@ public class JwtFilterConfig extends OncePerRequestFilter {
             String userEmail = jwtFilterService.extractUsername(jwt);
 
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                authenticateUser(request, userEmail, jwt);
+                authenticateUser(request, userEmail);
             }
 
             filterChain.doFilter(request, response);
@@ -64,20 +61,9 @@ public class JwtFilterConfig extends OncePerRequestFilter {
 
     private void authenticateUser(
             HttpServletRequest request,
-            String userEmail,
-            String jwt) {
+            String userEmail) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
-        if (isJwtValid(jwt, userDetails)) {
-            setAuthenticationToken(request, userDetails);
-        }
-    }
-
-    private boolean isJwtValid(String jwt, UserDetails userDetails) {
-        boolean tokenExists = tokenRepository.findByToken(jwt)
-                .map(t -> !t.isExpired() && !t.isRevoked())
-                .orElse(false);
-
-        return jwtFilterService.isTokenValid(jwt, (SecurityAppUser) userDetails) && tokenExists;
+        setAuthenticationToken(request, userDetails);
     }
 
     private void setAuthenticationToken(HttpServletRequest request, UserDetails userDetails) {

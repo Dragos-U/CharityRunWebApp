@@ -1,6 +1,5 @@
 package com.bearsoft.charityrun.security.services;
 
-import com.bearsoft.charityrun.repositories.TokenRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
@@ -18,8 +17,6 @@ import java.io.PrintWriter;
 @Service
 public class LogoutService implements LogoutHandler {
 
-    private final TokenRepository tokenRepository;
-
     @Override
     @Transactional
     public void logout(HttpServletRequest request,
@@ -34,23 +31,8 @@ public class LogoutService implements LogoutHandler {
             return;
         }
         jwt = authHeader.substring(bearer.length());
-        try{
-            var storedToken = tokenRepository.findByToken(jwt)
-                    .orElse(null);
-            if (storedToken != null) {
-                storedToken.setExpired(true);
-                storedToken.setRevoked(true);
-                tokenRepository.save(storedToken);
-                log.info("Token successfully revoked for jwt: {}", jwt);
-                sendResponse(response, HttpServletResponse.SC_OK, "Logout successful");
-            } else {
-                log.warn("Attempted to logout with an unrecognized jwt: {}", jwt);
-                sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Unrecognized JWT");
-            }
-        } catch (Exception e){
-            log.error("Error during logout process for jwt: {}", jwt, e);
-            sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
-        }
+        log.info("Token successfully revoked for jwt: {}", jwt);
+        sendResponse(response, HttpServletResponse.SC_OK, "Logout successful");
     }
     private void sendResponse(HttpServletResponse response, int status, String message) {
         response.setStatus(status);

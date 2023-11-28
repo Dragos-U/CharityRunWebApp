@@ -37,7 +37,7 @@ public class AppUserController {
 
     @GetMapping("/all")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<List<AppUserDTO>> getAllAppUsers(){
+    public ResponseEntity<List<AppUserDTO>> getAllAppUsers() {
         return ResponseEntity.status(HttpStatus.OK).body(appUserService.getAllAppUsers());
     }
 
@@ -54,7 +54,7 @@ public class AppUserController {
     @PatchMapping("/me")
     @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
     public ResponseEntity<String> changeLoggedAppUserPassword(
-            @RequestHeader(value="Accept-language", required = false) Locale locale,
+            @RequestHeader(value = "Accept-language", required = false) Locale locale,
             @RequestBody ChangePasswordDTO changePasswordDTO,
             Principal connectedAppUser) {
         appUserService.changeConnectedAppUserPassword(changePasswordDTO, connectedAppUser);
@@ -78,7 +78,7 @@ public class AppUserController {
     @GetMapping("/{email}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<AppUserDTO> getUserByEmail(
-            @PathVariable String email){
+            @PathVariable String email) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(appUserService.getAppUserByUsername(email));
     }
@@ -86,7 +86,7 @@ public class AppUserController {
     @DeleteMapping("/{email}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteUserByEmail(
-            @PathVariable String email){
+            @PathVariable String email) {
         appUserService.deleteAppUserByEmail(email);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .build();

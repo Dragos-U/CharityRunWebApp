@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="course_registration")
+@Table(name = "course_registration")
 public class CourseRegistration {
 
     @Id
@@ -31,7 +31,7 @@ public class CourseRegistration {
     @Enumerated(EnumType.STRING)
     private GenderType gender;
 
-    @OneToMany (mappedBy = "courseRegistration",fetch = FetchType.EAGER )
+    @OneToMany(mappedBy = "courseRegistration", fetch = FetchType.EAGER)
     @JsonManagedReference("courseRegistration-trainingPlan")
     private List<TrainingPlan> trainingPlans;
 

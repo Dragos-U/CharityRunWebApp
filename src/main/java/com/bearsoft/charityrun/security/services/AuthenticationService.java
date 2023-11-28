@@ -9,15 +9,10 @@ import com.bearsoft.charityrun.models.domain.dtos.AuthenticationResponseDTO;
 import com.bearsoft.charityrun.models.security.SecurityAppUser;
 import com.bearsoft.charityrun.models.domain.dtos.AppUserDTO;
 import com.bearsoft.charityrun.models.domain.entities.AppUser;
-import com.bearsoft.charityrun.models.domain.entities.RefreshToken;
 import com.bearsoft.charityrun.models.domain.entities.Role;
-import com.bearsoft.charityrun.models.domain.entities.Token;
 import com.bearsoft.charityrun.models.domain.enums.RoleType;
-import com.bearsoft.charityrun.models.domain.enums.TokenType;
 import com.bearsoft.charityrun.models.validation.OnCreate;
 import com.bearsoft.charityrun.repositories.AppUserRepository;
-import com.bearsoft.charityrun.repositories.RefreshTokenRepository;
-import com.bearsoft.charityrun.repositories.TokenRepository;
 import com.bearsoft.charityrun.services.EmailService;
 import com.bearsoft.charityrun.validators.ObjectsValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,7 +31,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -47,8 +41,6 @@ import java.util.Optional;
 public class AuthenticationService {
 
     private final AppUserRepository appUserRepository;
-    private final TokenRepository tokenRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
     private final EmailService emailService;
     private final AuthenticationManager authenticationManager;
     private final JwtFilterService jwtFilterService;
@@ -67,7 +59,7 @@ public class AuthenticationService {
         appUserDTOValidator.validate(appUserDTO, OnCreate.class);
 
         Optional<AppUser> existingUser = appUserRepository.findAppUsersByEmail(appUserDTO.getEmail());
-        if(existingUser.isPresent()){
+        if (existingUser.isPresent()) {
             throw new AppUserAlreadyExistsException("Email address is already used.");
         }
 
@@ -84,9 +76,6 @@ public class AuthenticationService {
         SecurityAppUser securityAppUser = new SecurityAppUser(appUser);
         var jwtToken = jwtFilterService.generateToken(securityAppUser);
         var refreshToken = jwtFilterService.generateRefreshToken(securityAppUser);
-
-        saveJwtTokenToRepo(appUser, jwtToken);
-        saveRefreshTokenToRepo(appUser, refreshToken);
 
         try {
             String subject = "Welcome to our event.";
@@ -124,46 +113,11 @@ public class AuthenticationService {
         log.info("New token was generated");
         var refreshToken = jwtFilterService.generateRefreshToken(securityAppUser);
         log.info("New refresh was generated");
-        revokeAllAppUserTokens(appUser);
-        saveJwtTokenToRepo(appUser, jwtToken);
 
         return AuthenticationResponseDTO.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .build();
-    }
-
-    private void revokeAllAppUserTokens(AppUser appUser) {
-        var validAppUserToken = tokenRepository.findAllValidTokensByUser(appUser.getId());
-        if (validAppUserToken.isEmpty())
-            return;
-        validAppUserToken.forEach(t -> {
-            t.setExpired(true);
-            t.setRevoked(true);
-        });
-        log.info("Old token was revoked");
-        tokenRepository.saveAll(validAppUserToken);
-        log.info("New token saved to database.");
-    }
-
-    private void saveJwtTokenToRepo(AppUser appUser, String jwtToken) {
-        var token = Token.builder()
-                .appUser(appUser)
-                .token(jwtToken)
-                .tokenType(TokenType.BEARER)
-                .revoked(false)
-                .expired(false)
-                .build();
-        tokenRepository.save(token);
-    }
-
-    private void saveRefreshTokenToRepo(AppUser appUser, String refreshToken) {
-        var token = RefreshToken.builder()
-                .appUser(appUser)
-                .token(refreshToken)
-                .expiryDate(Instant.now().plusMillis(refreshExpiration))
-                .build();
-        refreshTokenRepository.save(token);
     }
 
     public void refreshLoggedUserToken(
@@ -201,8 +155,6 @@ public class AuthenticationService {
     }
 
     private void updateAndSaveTokens(AppUser appUser, String accessToken, String refreshToken, HttpServletResponse response) throws IOException {
-        revokeAllAppUserTokens(appUser);
-        saveJwtTokenToRepo(appUser, accessToken);
         sendAuthenticationResponse(accessToken, refreshToken, response);
     }
 

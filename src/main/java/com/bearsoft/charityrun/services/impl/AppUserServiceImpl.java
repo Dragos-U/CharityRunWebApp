@@ -10,8 +10,6 @@ import com.bearsoft.charityrun.models.domain.dtos.AppUserDTO;
 import com.bearsoft.charityrun.models.domain.dtos.ChangePasswordDTO;
 import com.bearsoft.charityrun.models.validation.OnUpdate;
 import com.bearsoft.charityrun.repositories.AppUserRepository;
-import com.bearsoft.charityrun.repositories.RefreshTokenRepository;
-import com.bearsoft.charityrun.repositories.TokenRepository;
 import com.bearsoft.charityrun.services.AppUserService;
 import com.bearsoft.charityrun.validators.ObjectsValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,7 +17,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -36,8 +33,6 @@ import java.util.List;
 public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 
     private final AppUserRepository appUserRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
-    private final TokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final ObjectMapper objectMapper;
     private final ObjectsValidator<ChangePasswordDTO> changePasswordDTOObjectsValidator;
@@ -183,8 +178,6 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     }
     private void deleteAppUserCommon(AppUser appUser, String email) {
         try {
-            refreshTokenRepository.deleteByAppUserId(appUser.getId());
-            tokenRepository.deleteByAppUserId(appUser.getId());
             appUserRepository.delete(appUser);
         } catch (AppUserNotFoundException appUserNotFoundException) {
             log.error("User not found. {}", appUserNotFoundException.getMessage());

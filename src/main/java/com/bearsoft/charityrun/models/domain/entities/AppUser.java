@@ -14,17 +14,17 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="app_user")
+@Table(name = "app_user")
 public class AppUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="first_name")
+    @Column(name = "first_name")
     private String firstName;
 
-    @Column(name="last_name")
+    @Column(name = "last_name")
     private String lastName;
 
     @Column(nullable = false)
@@ -36,18 +36,14 @@ public class AppUser {
     @JsonManagedReference("appUser-address")
     private Address address;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER )
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "course_registration_id")
     @JsonManagedReference("appUser-courseRegistration")
     private CourseRegistration courseRegistration;
 
-    @OneToMany(mappedBy = "appUser", fetch = FetchType.EAGER )
-    @JsonManagedReference("appUser-tokens")
-    private List<Token> tokens;
-
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "appuser_roles",
-        joinColumns = @JoinColumn(name="user_id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id"))
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 }

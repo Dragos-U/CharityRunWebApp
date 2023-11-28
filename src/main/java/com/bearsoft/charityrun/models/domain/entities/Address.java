@@ -18,7 +18,7 @@ public class Address {
     private String country;
     private String city;
 
-    @Column(name="postal_code")
+    @Column(name = "postal_code")
     private String postalCode;
 
     @OneToOne(mappedBy = "address")
