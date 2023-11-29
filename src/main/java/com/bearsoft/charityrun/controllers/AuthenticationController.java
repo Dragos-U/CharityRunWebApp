@@ -3,7 +3,7 @@ package com.bearsoft.charityrun.controllers;
 import com.bearsoft.charityrun.models.domain.dtos.AuthenticationRequestDTO;
 import com.bearsoft.charityrun.models.domain.dtos.AuthenticationResponseDTO;
 import com.bearsoft.charityrun.models.domain.dtos.AppUserDTO;
-import com.bearsoft.charityrun.security.services.AuthenticationService;
+import com.bearsoft.charityrun.services.security.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

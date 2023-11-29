@@ -88,10 +88,10 @@ public class GlobalExceptionHandler {
         log.error("PasswordDoesNotMatchException occurred: {}", passwordDoesNotMatchException.getMessage(), passwordDoesNotMatchException);
         ApiException apiException = ApiException.builder()
                 .message(passwordDoesNotMatchException.getMessage())
-                .httpStatus(FORBIDDEN)
+                .httpStatus(BAD_REQUEST)
                 .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
                 .build();
-        return new ResponseEntity<>(apiException, FORBIDDEN);
+        return new ResponseEntity<>(apiException, BAD_REQUEST);
     }
 
     @ExceptionHandler(AppUserNotFoundException.class)
@@ -132,10 +132,10 @@ public class GlobalExceptionHandler {
         log.error("AppUserAlreadyExistsException occurred: {}", appUserAlreadyExistsException.getMessage(), appUserAlreadyExistsException);
         ApiException apiException = ApiException.builder()
                 .message(appUserAlreadyExistsException.getMessage())
-                .httpStatus(BAD_REQUEST)
+                .httpStatus(CONFLICT)
                 .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
                 .build();
-        return new ResponseEntity<>(apiException, BAD_REQUEST);
+        return new ResponseEntity<>(apiException, CONFLICT);
     }
 
     @ExceptionHandler(EmailSendingException.class)

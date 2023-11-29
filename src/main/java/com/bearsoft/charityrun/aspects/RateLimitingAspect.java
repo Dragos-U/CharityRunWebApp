@@ -1,7 +1,7 @@
 package com.bearsoft.charityrun.aspects;
 
 import com.bearsoft.charityrun.exceptions.ratelimiter.RateLimiterException;
-import com.bearsoft.charityrun.services.ApiRateLimiter;
+import com.bearsoft.charityrun.services.security.interfaces.ApiRateLimiter;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

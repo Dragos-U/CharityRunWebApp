@@ -1,7 +1,7 @@
 package com.bearsoft.charityrun.controllers;
 
 import com.bearsoft.charityrun.models.domain.dtos.EventDTO;
-import com.bearsoft.charityrun.services.EventService;
+import com.bearsoft.charityrun.services.models.interfaces.EventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +16,13 @@ public class EventController {
 
     private final EventService eventService;
 
+    @PostMapping
+    public ResponseEntity<EventDTO> createEvent(
+            @RequestBody EventDTO eventDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(eventService.createEvent(eventDTO));
+    }
+
     @GetMapping("/{eventID}")
     @PreAuthorize("hasRole('ROLE_PARTICIPANT')")
     public ResponseEntity<EventDTO> getEventByID(
@@ -23,13 +30,6 @@ public class EventController {
         EventDTO eventDTO = eventService.getEventById(eventID);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(eventDTO);
-    }
-
-    @PostMapping
-    public ResponseEntity<EventDTO> createEvent(
-            @RequestBody EventDTO eventDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(eventService.createEvent(eventDTO));
     }
 
     @PutMapping("/{eventID}")

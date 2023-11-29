@@ -3,7 +3,7 @@ package com.bearsoft.charityrun.controllers;
 import com.bearsoft.charityrun.aspects.RateLimited;
 import com.bearsoft.charityrun.models.domain.dtos.AppUserDTO;
 import com.bearsoft.charityrun.models.domain.dtos.ChangePasswordDTO;
-import com.bearsoft.charityrun.services.AppUserService;
+import com.bearsoft.charityrun.services.models.interfaces.AppUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
@@ -65,6 +65,14 @@ public class AppUserController {
                 .body(successMessage);
     }
 
+    @GetMapping("/{email}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<AppUserDTO> getUserByEmail(
+            @PathVariable String email) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(appUserService.getAppUserByUsername(email));
+    }
+
     @DeleteMapping("/me/{email}")
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Void> deletedLoggedAppUser(
@@ -73,14 +81,6 @@ public class AppUserController {
         appUserService.deletedConnectedAppUser(email, connectedAppUser);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .build();
-    }
-
-    @GetMapping("/{email}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<AppUserDTO> getUserByEmail(
-            @PathVariable String email) {
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(appUserService.getAppUserByUsername(email));
     }
 
     @DeleteMapping("/{email}")

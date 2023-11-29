@@ -2,7 +2,7 @@ package com.bearsoft.charityrun.controllers;
 
 import com.bearsoft.charityrun.models.domain.dtos.CourseDTO;
 import com.bearsoft.charityrun.models.domain.enums.CourseType;
-import com.bearsoft.charityrun.services.CourseService;
+import com.bearsoft.charityrun.services.models.interfaces.CourseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,19 +21,19 @@ public class CourseController {
 
     private final CourseService courseService;
 
+    @PostMapping
+    public ResponseEntity<CourseDTO> createCourse(
+            @RequestParam(required = false, defaultValue = "1") Long eventID,
+            @RequestBody CourseDTO courseDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(courseService.createCourse(courseDTO, eventID));
+    }
+
     @GetMapping
     @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_PARTICIPANT')")
     public ResponseEntity<List<CourseDTO>> getAllCourses(
             @RequestParam(required = false, defaultValue = "1") Long eventID
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(courseService.getCourseByEventId(eventID));
-    }
-
-    @PostMapping
-    public ResponseEntity<CourseDTO> createCourse(
-            @RequestParam(required = false, defaultValue = "1") Long eventID,
-            @RequestBody CourseDTO courseDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(courseService.createCourse(courseDTO, eventID));
     }
 
     @PatchMapping()
