@@ -6,7 +6,7 @@ target/
 !**/src/test/**/target/
 mvnw
 mvnw.cmd
-compose.yaml
+docker-compose.yml
 
 ### STS ###
 .apt_generated
