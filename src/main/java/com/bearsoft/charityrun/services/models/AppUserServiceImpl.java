@@ -1,10 +1,10 @@
 package com.bearsoft.charityrun.services.models;
 
-import com.bearsoft.charityrun.exceptions.appuser.EmailMatchingException;
-import com.bearsoft.charityrun.exceptions.appuser.InvalidUserAuthenticationException;
-import com.bearsoft.charityrun.exceptions.appuser.PasswordDoesNotMatchException;
-import com.bearsoft.charityrun.exceptions.appuser.AppUserNotFoundException;
+import com.bearsoft.charityrun.exceptions.appuser.*;
+import com.bearsoft.charityrun.models.domain.dtos.RegistrationResponseDTO;
 import com.bearsoft.charityrun.models.domain.entities.AppUser;
+import com.bearsoft.charityrun.models.domain.enums.CourseType;
+import com.bearsoft.charityrun.models.domain.enums.GenderType;
 import com.bearsoft.charityrun.models.security.SecurityAppUser;
 import com.bearsoft.charityrun.models.domain.dtos.AppUserDTO;
 import com.bearsoft.charityrun.models.domain.dtos.ChangePasswordDTO;
@@ -16,6 +16,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -25,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -85,6 +90,30 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
                 .stream()
                 .map(appUser -> objectMapper.convertValue(appUser, AppUserDTO.class))
                 .toList();
+    }
+
+    @Override
+    public List<RegistrationResponseDTO> getRegisteredUsers(CourseType courseType, Long eventId, GenderType gender, Integer minAge, Integer maxAge) {
+        List<AppUser> appUsers = appUserRepository.findUsersByCourseTypeEventIdAndGender(courseType, eventId, gender, minAge, maxAge);
+        return appUsers
+                .stream()
+                .map(this::convertAppUserToRegistrationResponseDTO)
+                .toList();
+    }
+
+    @Override
+    public Page<RegistrationResponseDTO> getSortedRegisteredUsers(Long eventId, String sortBy, String order, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<AppUser> usersPage = appUserRepository.findAppUsersByEventId(eventId, pageable);
+
+        Comparator<AppUser> comparator = getComparator(sortBy, order);
+
+        List<RegistrationResponseDTO> sortedUsers = usersPage.getContent().stream()
+                .sorted(comparator)
+                .map(this::convertAppUserToRegistrationResponseDTO)
+                .toList();
+
+        return new PageImpl<>(sortedUsers, pageable, usersPage.getTotalElements());
     }
 
     @Override
@@ -185,5 +214,27 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error during user deletion", e);
         }
+    }
+
+    private Comparator<AppUser> getComparator(String sortBy, String order) {
+        Comparator<AppUser> comparator = switch (sortBy) {
+            case "firstName" -> Comparator.comparing(AppUser::getFirstName);
+            case "lastName" -> Comparator.comparing(AppUser::getLastName);
+            case "email" -> Comparator.comparing(AppUser::getEmail);
+            case "age" -> Comparator.comparing(user -> user.getCourseRegistration().getAge());
+            default -> throw new InvalidSortFieldException("Invalid sort field");
+        };
+        return "desc".equalsIgnoreCase(order) ? comparator.reversed() : comparator;
+    }
+
+    private RegistrationResponseDTO convertAppUserToRegistrationResponseDTO(AppUser appUser) {
+        return RegistrationResponseDTO.builder()
+                .firstName(appUser.getFirstName())
+                .lastName(appUser.getLastName())
+                .email(appUser.getEmail())
+                .age(appUser.getCourseRegistration().getAge())
+                .gender(appUser.getCourseRegistration().getGender())
+                .bib(appUser.getCourseRegistration().getBib())
+                .build();
     }
 }

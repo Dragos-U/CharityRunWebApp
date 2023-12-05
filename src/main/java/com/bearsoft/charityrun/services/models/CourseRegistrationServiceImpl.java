@@ -4,12 +4,14 @@ import com.bearsoft.charityrun.exceptions.appuser.InvalidUserAuthenticationExcep
 import com.bearsoft.charityrun.exceptions.course.CourseNotFoundException;
 import com.bearsoft.charityrun.exceptions.courseregistration.CourseRegistrationAlreadyExistsException;
 import com.bearsoft.charityrun.exceptions.courseregistration.CourseRegistrationNotFoundException;
+import com.bearsoft.charityrun.models.domain.dtos.AppUserDTO;
 import com.bearsoft.charityrun.models.domain.dtos.CourseRegistrationDTO;
 import com.bearsoft.charityrun.models.domain.entities.AppUser;
 import com.bearsoft.charityrun.models.domain.entities.Course;
 import com.bearsoft.charityrun.models.domain.entities.CourseRegistration;
 import com.bearsoft.charityrun.models.domain.entities.Role;
 import com.bearsoft.charityrun.models.domain.enums.CourseType;
+import com.bearsoft.charityrun.models.domain.enums.GenderType;
 import com.bearsoft.charityrun.models.domain.enums.RoleType;
 import com.bearsoft.charityrun.models.security.SecurityAppUser;
 import com.bearsoft.charityrun.repositories.AppUserRepository;
@@ -25,6 +27,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.Set;
 
 @Service

@@ -3,6 +3,9 @@ package com.bearsoft.charityrun.controllers;
 import com.bearsoft.charityrun.aspects.RateLimited;
 import com.bearsoft.charityrun.models.domain.dtos.AppUserDTO;
 import com.bearsoft.charityrun.models.domain.dtos.ChangePasswordDTO;
+import com.bearsoft.charityrun.models.domain.dtos.RegistrationResponseDTO;
+import com.bearsoft.charityrun.models.domain.enums.CourseType;
+import com.bearsoft.charityrun.models.domain.enums.GenderType;
 import com.bearsoft.charityrun.services.models.interfaces.AppUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,10 +38,36 @@ public class AppUserController {
                 .body(appUserService.getConnectedAppUserData(connectedAppUser));
     }
 
-    @GetMapping("/all")
+    @GetMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<AppUserDTO>> getAllAppUsers() {
         return ResponseEntity.status(HttpStatus.OK).body(appUserService.getAllAppUsers());
+    }
+
+    @GetMapping("/registered/{eventId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<List<RegistrationResponseDTO>> getRegisteredUsers(
+            @PathVariable("eventId") Long eventId,
+            @RequestParam("courseType") CourseType courseType,
+            @RequestParam("gender") GenderType gender,
+            @RequestParam(value = "minAge", required = false) Integer minAge,
+            @RequestParam(value = "maxAge", required = false) Integer maxAge) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(appUserService.getRegisteredUsers(courseType, eventId, gender, minAge, maxAge));
+    }
+
+    @GetMapping("/sorted/{eventId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<List<RegistrationResponseDTO>> getSortedRegisteredUsers(
+            @PathVariable Long eventId,
+            @RequestParam String sortBy,
+            @RequestParam(defaultValue = "asc") String order,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(appUserService.getSortedRegisteredUsers(eventId, sortBy, order,page, size).getContent());
     }
 
     @PutMapping("/me")

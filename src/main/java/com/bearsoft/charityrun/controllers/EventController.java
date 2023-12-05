@@ -24,12 +24,10 @@ public class EventController {
     }
 
     @GetMapping("/{eventID}")
-    @PreAuthorize("hasRole('ROLE_PARTICIPANT')")
     public ResponseEntity<EventDTO> getEventByID(
             @PathVariable Long eventID) {
-        EventDTO eventDTO = eventService.getEventById(eventID);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(eventDTO);
+                .body(eventService.getEventById(eventID));
     }
 
     @PutMapping("/{eventID}")

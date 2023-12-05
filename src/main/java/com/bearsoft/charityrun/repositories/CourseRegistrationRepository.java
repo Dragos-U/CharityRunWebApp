@@ -12,5 +12,4 @@ public interface CourseRegistrationRepository extends JpaRepository<CourseRegist
           SELECT cr.bib FROM CourseRegistration cr
             """)
     Set<Integer> findAllBibNumbers();
-
 }

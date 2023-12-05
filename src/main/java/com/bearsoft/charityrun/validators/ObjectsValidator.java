@@ -23,7 +23,6 @@ public class ObjectsValidator<T> {
         if(!violations.isEmpty()) {
             var errorMessages = violations
                     .stream()
-                    //.map(ConstraintViolation::getMessage)
                     .map(violation -> violation.getPropertyPath() + ": " + violation.getMessage())
                     .collect(Collectors.toSet());
 

@@ -116,6 +116,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiException, UNAUTHORIZED);
     }
 
+    @ExceptionHandler(InvalidSortFieldException.class)
+    public ResponseEntity<Object> handlerInvalidSortFieldException(InvalidSortFieldException invalidSortFieldException){
+        log.error("InvalidSortFieldException occurred: {}", invalidSortFieldException.getMessage());
+        ApiException apiException = ApiException.builder()
+                .message(invalidSortFieldException.getMessage())
+                .httpStatus(BAD_REQUEST)
+                .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
+                .build();
+        return new ResponseEntity<>(apiException, BAD_REQUEST);
+    }
+
     @ExceptionHandler(EmailMatchingException.class)
     public ResponseEntity<Object> handlerEmailMatchingException(EmailMatchingException emailMatchingException) {
         log.error("EmailMatchingException occurred: {}", emailMatchingException.getMessage(), emailMatchingException);
