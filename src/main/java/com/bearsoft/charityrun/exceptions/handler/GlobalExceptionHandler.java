@@ -30,208 +30,132 @@ public class GlobalExceptionHandler {
 
     private static final HttpStatus BAD_REQUEST = HttpStatus.BAD_REQUEST;
     private static final HttpStatus CONFLICT = HttpStatus.CONFLICT;
-    private static final HttpStatus FORBIDDEN = HttpStatus.FORBIDDEN;
     private static final HttpStatus UNAUTHORIZED = HttpStatus.UNAUTHORIZED;
+
+    private static ZonedDateTime getCurrentTimeStamp() {
+        return ZonedDateTime.now(ZoneId.of("Z"));
+    }
+
+    private static ResponseEntity<Object> getResponseEntity(String httpMessageNotReadableException, HttpStatus badRequest) {
+        ApiException apiException = ApiException.builder()
+                .message(httpMessageNotReadableException)
+                .httpStatus(badRequest)
+                .timeStamp(getCurrentTimeStamp())
+                .build();
+        return new ResponseEntity<>(apiException, badRequest);
+    }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Object> handleHttpMessageNotReadableException(HttpMessageNotReadableException httpMessageNotReadableException) {
         log.error("HttpMessageNotReadableException occurred: {}", httpMessageNotReadableException.getMessage(), httpMessageNotReadableException);
-
-        ApiException apiException = ApiException.builder()
-                .message(httpMessageNotReadableException.getMessage())
-                .httpStatus(BAD_REQUEST)
-                .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
-                .build();
-        return new ResponseEntity<>(apiException, BAD_REQUEST);
+        return getResponseEntity(httpMessageNotReadableException.getMessage(), BAD_REQUEST);
     }
+
 
     @ExceptionHandler(RateLimiterException.class)
     public ResponseEntity<Object> handleRateLimiterException(RateLimiterException limiterException) {
         log.error("HttpMessageNotReadableException occurred: {}", limiterException.getMessage(), limiterException);
-
-        ApiException apiException = ApiException.builder()
-                .message(limiterException.getMessage())
-                .httpStatus(HttpStatus.TOO_MANY_REQUESTS)
-                .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
-                .build();
-        return new ResponseEntity<>(apiException, HttpStatus.TOO_MANY_REQUESTS);
+        return getResponseEntity(limiterException.getMessage(), HttpStatus.TOO_MANY_REQUESTS);
     }
 
     @ExceptionHandler(ObjectNotValidException.class)
     public ResponseEntity<Object> handleObjectNotValidException(ObjectNotValidException objectNotValidException) {
         log.error("ObjectNotValidException occurred: {}", objectNotValidException.getMessage(), objectNotValidException);
-
         Set<String> errorMessages = objectNotValidException.getErrorMessages();
         String combinedErrorMessage = String.join(", ", errorMessages);
-        ApiException apiException = ApiException.builder()
-                .message(combinedErrorMessage)
-                .httpStatus(BAD_REQUEST)
-                .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
-                .build();
-        return new ResponseEntity<>(apiException, BAD_REQUEST);
+        return getResponseEntity(combinedErrorMessage, BAD_REQUEST);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<Object> handlerConstraintViolationException(ConstraintViolationException constraintViolationException){
+    public ResponseEntity<Object> handlerConstraintViolationException(ConstraintViolationException constraintViolationException) {
         log.error("ConstraintViolationException occurred: {}", constraintViolationException.getMessage(), constraintViolationException);
-
-        ApiException apiException = ApiException.builder()
-                .message(constraintViolationException.getMessage())
-                .httpStatus(BAD_REQUEST)
-                .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
-                .build();
-        return new ResponseEntity<>(apiException, BAD_REQUEST);
+        return getResponseEntity(constraintViolationException.getMessage(), BAD_REQUEST);
     }
 
     @ExceptionHandler(PasswordDoesNotMatchException.class)
     public ResponseEntity<Object> handlerPasswordDoesNotMatchException(PasswordDoesNotMatchException passwordDoesNotMatchException) {
         log.error("PasswordDoesNotMatchException occurred: {}", passwordDoesNotMatchException.getMessage(), passwordDoesNotMatchException);
-        ApiException apiException = ApiException.builder()
-                .message(passwordDoesNotMatchException.getMessage())
-                .httpStatus(BAD_REQUEST)
-                .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
-                .build();
-        return new ResponseEntity<>(apiException, BAD_REQUEST);
+        return getResponseEntity(passwordDoesNotMatchException.getMessage(), BAD_REQUEST);
     }
 
     @ExceptionHandler(AppUserNotFoundException.class)
     public ResponseEntity<Object> handlerUserNotFoundException(AppUserNotFoundException appUserNotFoundException) {
         log.error("UserNotFoundException occurred: {}", appUserNotFoundException.getMessage(), appUserNotFoundException);
-        ApiException apiException = ApiException.builder()
-                .message(appUserNotFoundException.getMessage())
-                .httpStatus(BAD_REQUEST)
-                .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
-                .build();
-        return new ResponseEntity<>(apiException, BAD_REQUEST);
+        return getResponseEntity(appUserNotFoundException.getMessage(), BAD_REQUEST);
     }
 
     @ExceptionHandler(InvalidUserAuthenticationException.class)
     public ResponseEntity<Object> handlerInvalidUserAuthenticationException(InvalidUserAuthenticationException invalidUserAuthenticationException) {
         log.error("InvalidUserAuthenticationException occurred: {}", invalidUserAuthenticationException.getMessage(), invalidUserAuthenticationException);
-        ApiException apiException = ApiException.builder()
-                .message(invalidUserAuthenticationException.getMessage())
-                .httpStatus(UNAUTHORIZED)
-                .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
-                .build();
-        return new ResponseEntity<>(apiException, UNAUTHORIZED);
+        return getResponseEntity(invalidUserAuthenticationException.getMessage(), UNAUTHORIZED);
     }
 
     @ExceptionHandler(InvalidSortFieldException.class)
-    public ResponseEntity<Object> handlerInvalidSortFieldException(InvalidSortFieldException invalidSortFieldException){
+    public ResponseEntity<Object> handlerInvalidSortFieldException(InvalidSortFieldException invalidSortFieldException) {
         log.error("InvalidSortFieldException occurred: {}", invalidSortFieldException.getMessage());
-        ApiException apiException = ApiException.builder()
-                .message(invalidSortFieldException.getMessage())
-                .httpStatus(BAD_REQUEST)
-                .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
-                .build();
-        return new ResponseEntity<>(apiException, BAD_REQUEST);
+        return getResponseEntity(invalidSortFieldException.getMessage(), BAD_REQUEST);
+    }
+
+    @ExceptionHandler(TokenNotFoundException.class)
+    public ResponseEntity<Object> handlerTokenNotFoundException(TokenNotFoundException tokenNotFoundException) {
+        log.error("TokenNotFoundException occurred: {}", tokenNotFoundException.getMessage());
+        return getResponseEntity(tokenNotFoundException.getMessage(), BAD_REQUEST);
     }
 
     @ExceptionHandler(EmailMatchingException.class)
     public ResponseEntity<Object> handlerEmailMatchingException(EmailMatchingException emailMatchingException) {
         log.error("EmailMatchingException occurred: {}", emailMatchingException.getMessage(), emailMatchingException);
-        ApiException apiException = ApiException.builder()
-                .message(emailMatchingException.getMessage())
-                .httpStatus(BAD_REQUEST)
-                .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
-                .build();
-        return new ResponseEntity<>(apiException, BAD_REQUEST);
+        return getResponseEntity(emailMatchingException.getMessage(), BAD_REQUEST);
     }
 
     @ExceptionHandler(AppUserAlreadyExistsException.class)
     public ResponseEntity<Object> handlerAppUserAlreadyExistsException(AppUserAlreadyExistsException appUserAlreadyExistsException) {
         log.error("AppUserAlreadyExistsException occurred: {}", appUserAlreadyExistsException.getMessage(), appUserAlreadyExistsException);
-        ApiException apiException = ApiException.builder()
-                .message(appUserAlreadyExistsException.getMessage())
-                .httpStatus(CONFLICT)
-                .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
-                .build();
-        return new ResponseEntity<>(apiException, CONFLICT);
+        return getResponseEntity(appUserAlreadyExistsException.getMessage(), CONFLICT);
     }
 
     @ExceptionHandler(EmailSendingException.class)
     public ResponseEntity<Object> handlerEmailSendingException(EmailSendingException emailSendingException) {
         log.error("EmailSendingException occurred: {}", emailSendingException.getMessage());
-        ApiException apiException = ApiException.builder()
-                .message(emailSendingException.getMessage())
-                .httpStatus(BAD_REQUEST)
-                .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
-                .build();
-        return new ResponseEntity<>(apiException, BAD_REQUEST);
+        return getResponseEntity(emailSendingException.getMessage(), BAD_REQUEST);
     }
 
     @ExceptionHandler(CourseAlreadyExistException.class)
     public ResponseEntity<Object> handlerCourseAlreadyExistException(CourseAlreadyExistException courseAlreadyExistException) {
         log.error("CourseAlreadyExistException occurred: {}", courseAlreadyExistException.getMessage());
-        ApiException apiException = ApiException.builder()
-                .message(courseAlreadyExistException.getMessage())
-                .httpStatus(CONFLICT)
-                .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
-                .build();
-        return new ResponseEntity<>(apiException, CONFLICT);
+        return getResponseEntity(courseAlreadyExistException.getMessage(), CONFLICT);
     }
 
     @ExceptionHandler(CourseNotFoundException.class)
     public ResponseEntity<Object> handlerCourseNotFoundException(CourseNotFoundException courseNotFoundException) {
-        ApiException apiException = ApiException.builder()
-                .message(courseNotFoundException.getMessage())
-                .httpStatus(BAD_REQUEST)
-                .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
-                .build();
-        return new ResponseEntity<>(apiException, BAD_REQUEST);
+        return getResponseEntity(courseNotFoundException.getMessage(), BAD_REQUEST);
     }
 
     @ExceptionHandler(CourseRegistrationAlreadyExistsException.class)
     public ResponseEntity<Object> handlerCourseRegistrationAlreadyExistsException(CourseRegistrationAlreadyExistsException courseRegistrationAlreadyExistsException) {
-        ApiException apiException = ApiException.builder()
-                .message(courseRegistrationAlreadyExistsException.getMessage())
-                .httpStatus(CONFLICT)
-                .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
-                .build();
-        return new ResponseEntity<>(apiException, CONFLICT);
+        return getResponseEntity(courseRegistrationAlreadyExistsException.getMessage(), CONFLICT);
     }
 
     @ExceptionHandler(CourseRegistrationNotFoundException.class)
     public ResponseEntity<Object> handlerCourseRegistrationNotFoundException(CourseRegistrationNotFoundException courseRegistrationNotFoundException) {
-        ApiException apiException = ApiException.builder()
-                .message(courseRegistrationNotFoundException.getMessage())
-                .httpStatus(BAD_REQUEST)
-                .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
-                .build();
-        return new ResponseEntity<>(apiException, BAD_REQUEST);
+        return getResponseEntity(courseRegistrationNotFoundException.getMessage(), BAD_REQUEST);
     }
 
     @ExceptionHandler(EventAlreadyExistsException.class)
     public ResponseEntity<Object> handlerEventAlreadyExistsException(EventAlreadyExistsException eventAlreadyExistsException) {
         log.error("EventAlreadyExistsException occurred: {}", eventAlreadyExistsException.getMessage());
-
-        ApiException apiException = ApiException.builder()
-                .message(eventAlreadyExistsException.getMessage())
-                .httpStatus(CONFLICT)
-                .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
-                .build();
-        return new ResponseEntity<>(apiException, CONFLICT);
+        return getResponseEntity(eventAlreadyExistsException.getMessage(), CONFLICT);
     }
 
     @ExceptionHandler(EventUpdateException.class)
     public ResponseEntity<Object> handlerEventUpdateException(EventUpdateException eventUpdateException) {
         log.error("EventUpdateException occurred: {}", eventUpdateException.getMessage());
-        ApiException apiException = ApiException.builder()
-                .message(eventUpdateException.getMessage())
-                .httpStatus(BAD_REQUEST)
-                .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
-                .build();
-        return new ResponseEntity<>(apiException, BAD_REQUEST);
+        return getResponseEntity(eventUpdateException.getMessage(), BAD_REQUEST);
     }
 
     @ExceptionHandler(EventNotFoundException.class)
     public ResponseEntity<Object> handlerEventNotFoundException(EventNotFoundException eventNotFoundException) {
         log.error("EventNotFoundException occurred: {}", eventNotFoundException.getMessage());
-        ApiException apiException = ApiException.builder()
-                .message(eventNotFoundException.getMessage())
-                .httpStatus(BAD_REQUEST)
-                .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
-                .build();
-        return new ResponseEntity<>(apiException, BAD_REQUEST);
+        return getResponseEntity(eventNotFoundException.getMessage(), BAD_REQUEST);
     }
 }

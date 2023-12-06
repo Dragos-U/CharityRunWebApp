@@ -67,7 +67,7 @@ public class AppUserController {
             @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(appUserService.getSortedRegisteredUsers(eventId, sortBy, order,page, size).getContent());
+                .body(appUserService.getSortedRegisteredUsers(eventId, sortBy, order, page, size).getContent());
     }
 
     @PutMapping("/me")

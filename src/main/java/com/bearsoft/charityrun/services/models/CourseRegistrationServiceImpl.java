@@ -1,4 +1,4 @@
-package com.bearsoft.charityrun.services.models.interfaces;
+package com.bearsoft.charityrun.services.models;
 
 import com.bearsoft.charityrun.exceptions.appuser.InvalidUserAuthenticationException;
 import com.bearsoft.charityrun.exceptions.course.CourseNotFoundException;
@@ -18,6 +18,8 @@ import com.bearsoft.charityrun.repositories.AppUserRepository;
 import com.bearsoft.charityrun.repositories.CourseRegistrationRepository;
 import com.bearsoft.charityrun.repositories.CourseRepository;
 import com.bearsoft.charityrun.repositories.RoleRepository;
+import com.bearsoft.charityrun.services.models.interfaces.BibNumberGeneratorService;
+import com.bearsoft.charityrun.services.models.interfaces.CourseRegistrationService;
 import com.bearsoft.charityrun.services.notifications.interfaces.EmailService;
 import com.bearsoft.charityrun.validators.ObjectsValidator;
 import jakarta.transaction.Transactional;

@@ -51,7 +51,7 @@ class AppUserControllerTest {
 
     private static final String USERS_URL = "/api/v1/users";
     private static final String USERS_ME_URL = "/api/v1/users/me";
-    private static final String USERS_ALL_URL = "/api/v1/users/all";
+    private static final String USERS_ALL_URL = "/api/v1/users";
     private static final String FIRST_NAME = "John";
     private static final String LAST_NAME = "Doe";
     private static final String EMAIL = "john.doe@gmail.com";
@@ -221,7 +221,7 @@ class AppUserControllerTest {
     class TestAdminEndPoints {
 
         @Nested
-        @DisplayName("Test Get All Users")
+        @DisplayName("Test Admin Get All Users")
         class GetAllAppUsersTests {
 
             @BeforeEach

@@ -133,12 +133,12 @@ public class EventControllerTest {
         }
 
         @Test
-        @DisplayName("Participant can get event details")
+        @DisplayName("Participant cannot get event details")
         void testGetEventByParticipant() throws Exception {
             setUpSecurityContextWithAuthenticatedUser(RoleType.ROLE_PARTICIPANT);
             mockMvc.perform(get(EVENTS_URL + "/1")
                             .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isOk());
+                    .andExpect(status().isForbidden());
         }
 
         @Test

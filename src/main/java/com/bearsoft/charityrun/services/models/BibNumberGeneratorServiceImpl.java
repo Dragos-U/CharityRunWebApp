@@ -1,6 +1,7 @@
-package com.bearsoft.charityrun.services.models.interfaces;
+package com.bearsoft.charityrun.services.models;
 
 import com.bearsoft.charityrun.models.domain.enums.CourseType;
+import com.bearsoft.charityrun.services.models.interfaces.BibNumberGeneratorService;
 import org.springframework.stereotype.Service;
 
 import java.util.Random;

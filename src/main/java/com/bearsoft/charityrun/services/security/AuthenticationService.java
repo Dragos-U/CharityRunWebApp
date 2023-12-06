@@ -3,6 +3,7 @@ package com.bearsoft.charityrun.services.security;
 import com.bearsoft.charityrun.exceptions.appuser.AppUserAlreadyExistsException;
 import com.bearsoft.charityrun.exceptions.appuser.PasswordDoesNotMatchException;
 import com.bearsoft.charityrun.exceptions.appuser.AppUserNotFoundException;
+import com.bearsoft.charityrun.exceptions.appuser.TokenNotFoundException;
 import com.bearsoft.charityrun.exceptions.email.EmailSendingException;
 import com.bearsoft.charityrun.models.domain.dtos.AuthenticationRequestDTO;
 import com.bearsoft.charityrun.models.domain.dtos.AuthenticationResponseDTO;
@@ -38,7 +39,13 @@ import java.util.Optional;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class AuthenticationService {
+public class AuthenticationService implements com.bearsoft.charityrun.services.security.interfaces.AuthenticationService {
+
+    public static final String USERNAME_NOT_FOUND = "Username not found.";
+    public static final String ERROR_DURING_EMAIL_SENDING = "Error during email sending.";
+    private static final String BEARER_PREFIX = "Bearer ";
+    public static final String AUTHENTICATION_FAILED = "Authentication failed.";
+    public static final String WRONG_CREDENTIALS = " Wrong credentials.";
 
     private final AppUserRepository appUserRepository;
     private final EmailService emailService;
@@ -49,12 +56,12 @@ public class AuthenticationService {
     private final ObjectsValidator<AppUserDTO> appUserDTOValidator;
     private final ObjectsValidator<AuthenticationRequestDTO> authenticationRequestDTOObjectsValidator;
 
-    private static final String BEARER_PREFIX = "Bearer ";
 
     @Value("${application.security.jwt.refresh-token.expiration}")
     private long refreshExpiration;
 
     @Transactional
+    @Override
     public AuthenticationResponseDTO registerAppUser(AppUserDTO appUserDTO) {
         appUserDTOValidator.validate(appUserDTO, OnCreate.class);
 
@@ -73,22 +80,19 @@ public class AuthenticationService {
                 .build();
         appUserRepository.save(appUser);
 
-        SecurityAppUser securityAppUser = new SecurityAppUser(appUser);
-        var jwtToken = jwtFilterService.generateToken(securityAppUser);
-        var refreshToken = jwtFilterService.generateRefreshToken(securityAppUser);
+        var securityAppUser = new SecurityAppUser(appUser);
 
         try {
             String subject = "Welcome to our event.";
             emailService.sendAppUserRegistrationEmail(appUserDTO, subject);
         } catch (EmailSendingException e) {
-            throw new EmailSendingException("Error during email sending.");
+            log.error(ERROR_DURING_EMAIL_SENDING);
+            throw new EmailSendingException(ERROR_DURING_EMAIL_SENDING);
         }
-        return AuthenticationResponseDTO.builder()
-                .accessToken(jwtToken)
-                .refreshToken(refreshToken)
-                .build();
+        return generateTokens(securityAppUser);
     }
 
+    @Override
     public AuthenticationResponseDTO loginAppUser(AuthenticationRequestDTO authenticationRequestDTO) {
         authenticationRequestDTOObjectsValidator.validate(authenticationRequestDTO);
 
@@ -98,44 +102,37 @@ public class AuthenticationService {
                             authenticationRequestDTO.getEmail(),
                             authenticationRequestDTO.getPassword()));
         } catch (UsernameNotFoundException usernameNotFoundException) {
-            log.error("Authentication failed. Username not found. {}", usernameNotFoundException.getMessage());
-            throw new AppUserNotFoundException("Username not found.");
+            log.error(AUTHENTICATION_FAILED + USERNAME_NOT_FOUND + " {}", usernameNotFoundException.getMessage());
+            throw new AppUserNotFoundException(USERNAME_NOT_FOUND);
         } catch (BadCredentialsException badCredentialsException) {
-            log.error("Authentication failed. Wrong credentials. {}", badCredentialsException.getMessage());
-            throw new PasswordDoesNotMatchException("Wrong credentials.");
+            log.error(AUTHENTICATION_FAILED + WRONG_CREDENTIALS + " {}", badCredentialsException.getMessage());
+            throw new PasswordDoesNotMatchException(WRONG_CREDENTIALS);
         }
 
         var appUser = appUserRepository.findAppUsersByEmail(authenticationRequestDTO.getEmail())
-                .orElseThrow(() -> new AppUserNotFoundException("User not found."));
+                .orElseThrow(() -> new AppUserNotFoundException(USERNAME_NOT_FOUND));
+        var securityAppUser = new SecurityAppUser(appUser);
 
-        SecurityAppUser securityAppUser = new SecurityAppUser(appUser);
-        var jwtToken = jwtFilterService.generateToken(securityAppUser);
-        log.info("New token was generated");
-        var refreshToken = jwtFilterService.generateRefreshToken(securityAppUser);
-        log.info("New refresh was generated");
-
-        return AuthenticationResponseDTO.builder()
-                .accessToken(jwtToken)
-                .refreshToken(refreshToken)
-                .build();
+        return generateTokens(securityAppUser);
     }
 
+    @Override
     public void refreshLoggedUserToken(
             HttpServletRequest request,
             HttpServletResponse response) throws IOException {
 
         String refreshToken = extractTokenFromRequest(request, BEARER_PREFIX);
         if (refreshToken == null) {
-            return;
+            throw new TokenNotFoundException("The request has no token in the header.");
         }
 
         String userEmail = jwtFilterService.extractUsername(refreshToken);
         Optional<AppUser> appUserOptional = appUserRepository.findAppUsersByEmail(userEmail);
 
         if (appUserOptional.isPresent() && isTokenValidForUser(refreshToken, appUserOptional.get())) {
-            SecurityAppUser securityAppUser = new SecurityAppUser(appUserOptional.get());
+            var securityAppUser = new SecurityAppUser(appUserOptional.get());
             String accessToken = jwtFilterService.generateToken(securityAppUser);
-            updateAndSaveTokens(appUserOptional.get(), accessToken, refreshToken, response);
+            sendAuthenticationResponse(accessToken, refreshToken, response);
         }
     }
 
@@ -150,12 +147,8 @@ public class AuthenticationService {
     }
 
     private boolean isTokenValidForUser(String token, AppUser appUser) {
-        SecurityAppUser securityAppUser = new SecurityAppUser(appUser);
+        var securityAppUser = new SecurityAppUser(appUser);
         return jwtFilterService.isTokenValid(token, securityAppUser);
-    }
-
-    private void updateAndSaveTokens(AppUser appUser, String accessToken, String refreshToken, HttpServletResponse response) throws IOException {
-        sendAuthenticationResponse(accessToken, refreshToken, response);
     }
 
     private void sendAuthenticationResponse(String accessToken, String refreshToken, HttpServletResponse response) throws IOException {
@@ -164,5 +157,17 @@ public class AuthenticationService {
                 .refreshToken(refreshToken)
                 .build();
         new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
+    }
+
+    private AuthenticationResponseDTO generateTokens(SecurityAppUser securityAppUser) {
+        String jwtToken = jwtFilterService.generateToken(securityAppUser);
+        log.info("New token was generated");
+        String refreshToken = jwtFilterService.generateRefreshToken(securityAppUser);
+        log.info("New refresh was generated");
+
+        return AuthenticationResponseDTO.builder()
+                .accessToken(jwtToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 }

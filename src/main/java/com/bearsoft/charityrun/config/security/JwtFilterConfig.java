@@ -24,6 +24,7 @@ import java.io.IOException;
 @Slf4j
 public class JwtFilterConfig extends OncePerRequestFilter {
 
+    public static final String JWT_TOKEN_EXPIRED = "JWT token expired.";
     private final JwtFilterService jwtFilterService;
     private final UserDetailsService userDetailsService;
 
@@ -53,9 +54,9 @@ public class JwtFilterConfig extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
         } catch (ExpiredJwtException e) {
-            log.error("JWT token expired: {}", e.getMessage());
+            log.error(JWT_TOKEN_EXPIRED + " {}", e.getMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("JWT token has expired. -> ".concat(e.getMessage()));
+            response.getWriter().write(JWT_TOKEN_EXPIRED + " -> ".concat(e.getMessage()));
         }
     }
 

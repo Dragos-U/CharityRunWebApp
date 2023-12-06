@@ -1,4 +1,4 @@
-package com.bearsoft.charityrun.services.models.interfaces;
+package com.bearsoft.charityrun.services.models;
 
 import com.bearsoft.charityrun.exceptions.course.CourseAlreadyExistException;
 import com.bearsoft.charityrun.exceptions.course.CourseNotFoundException;
@@ -9,6 +9,7 @@ import com.bearsoft.charityrun.models.domain.entities.Event;
 import com.bearsoft.charityrun.models.domain.enums.CourseType;
 import com.bearsoft.charityrun.repositories.CourseRepository;
 import com.bearsoft.charityrun.repositories.EventRepository;
+import com.bearsoft.charityrun.services.models.interfaces.CourseService;
 import com.bearsoft.charityrun.validators.ObjectsValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;

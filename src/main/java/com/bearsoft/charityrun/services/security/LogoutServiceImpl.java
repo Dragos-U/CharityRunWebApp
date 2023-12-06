@@ -15,7 +15,7 @@ import java.io.PrintWriter;
 @RequiredArgsConstructor
 @Slf4j
 @Service
-public class LogoutService implements LogoutHandler {
+public class LogoutServiceImpl implements LogoutHandler {
 
     @Override
     @Transactional

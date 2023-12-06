@@ -31,10 +31,6 @@ public class ApiRateLimiterImpl implements ApiRateLimiter {
             info.windowStartTime = currentTime;
         }
 
-        if (info.requestCount.incrementAndGet() > MAX_REQUESTS_PER_MINUTE) {
-            return true;
-        }
-
-        return false;
+        return info.requestCount.incrementAndGet() > MAX_REQUESTS_PER_MINUTE;
     }
 }

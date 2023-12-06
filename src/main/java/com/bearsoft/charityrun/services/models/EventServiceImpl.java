@@ -1,4 +1,4 @@
-package com.bearsoft.charityrun.services.models.interfaces;
+package com.bearsoft.charityrun.services.models;
 
 import com.bearsoft.charityrun.exceptions.event.EventAlreadyExistsException;
 import com.bearsoft.charityrun.exceptions.event.EventNotFoundException;
@@ -6,6 +6,7 @@ import com.bearsoft.charityrun.exceptions.event.EventUpdateException;
 import com.bearsoft.charityrun.models.domain.dtos.EventDTO;
 import com.bearsoft.charityrun.models.domain.entities.Event;
 import com.bearsoft.charityrun.repositories.EventRepository;
+import com.bearsoft.charityrun.services.models.interfaces.EventService;
 import com.bearsoft.charityrun.validators.ObjectsValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
