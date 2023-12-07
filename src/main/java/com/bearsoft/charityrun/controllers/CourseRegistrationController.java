@@ -2,6 +2,7 @@ package com.bearsoft.charityrun.controllers;
 
 import com.bearsoft.charityrun.models.domain.dtos.CourseRegistrationDTO;
 import com.bearsoft.charityrun.services.models.interfaces.CourseRegistrationService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import java.security.Principal;
 @RestController
 @RequestMapping("/api/v1/course-registrations")
 @RequiredArgsConstructor
+@Tag(name = "Course Registration")
 public class CourseRegistrationController {
 
     private final CourseRegistrationService courseRegistrationService;

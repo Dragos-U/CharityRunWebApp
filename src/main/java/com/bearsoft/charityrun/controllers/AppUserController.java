@@ -7,6 +7,7 @@ import com.bearsoft.charityrun.models.domain.dtos.RegistrationResponseDTO;
 import com.bearsoft.charityrun.models.domain.enums.CourseType;
 import com.bearsoft.charityrun.models.domain.enums.GenderType;
 import com.bearsoft.charityrun.services.models.interfaces.AppUserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
@@ -24,6 +25,7 @@ import java.util.Locale;
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "App User")
 public class AppUserController {
 
     private final AppUserService appUserService;

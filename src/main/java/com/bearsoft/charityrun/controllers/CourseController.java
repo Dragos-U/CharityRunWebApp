@@ -3,6 +3,7 @@ package com.bearsoft.charityrun.controllers;
 import com.bearsoft.charityrun.models.domain.dtos.CourseDTO;
 import com.bearsoft.charityrun.models.domain.enums.CourseType;
 import com.bearsoft.charityrun.services.models.interfaces.CourseService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 @RequestMapping("/api/v1/courses")
+@Tag(name = "Course")
 public class CourseController {
 
     private final CourseService courseService;

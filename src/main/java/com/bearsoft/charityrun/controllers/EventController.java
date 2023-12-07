@@ -2,6 +2,7 @@ package com.bearsoft.charityrun.controllers;
 
 import com.bearsoft.charityrun.models.domain.dtos.EventDTO;
 import com.bearsoft.charityrun.services.models.interfaces.EventService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 @RequestMapping("/api/v1/events")
+@Tag(name = "Event")
 public class EventController {
 
     private final EventService eventService;

@@ -36,7 +36,4 @@ public class Course {
     @JsonBackReference("event-courses")
     private Event event;
 
-    public double getCourseLength() {
-        return courseType.getCourseLength();
-    }
 }
