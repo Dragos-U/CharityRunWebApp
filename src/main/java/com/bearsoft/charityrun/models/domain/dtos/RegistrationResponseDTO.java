@@ -10,7 +10,6 @@ public class RegistrationResponseDTO {
 
     private String firstName;
     private String lastName;
-    private String email;
     private int age;
     private GenderType gender;
     private int bib;

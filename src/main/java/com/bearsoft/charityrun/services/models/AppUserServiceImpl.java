@@ -231,7 +231,6 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
         return RegistrationResponseDTO.builder()
                 .firstName(appUser.getFirstName())
                 .lastName(appUser.getLastName())
-                .email(appUser.getEmail())
                 .age(appUser.getCourseRegistration().getAge())
                 .gender(appUser.getCourseRegistration().getGender())
                 .bib(appUser.getCourseRegistration().getBib())

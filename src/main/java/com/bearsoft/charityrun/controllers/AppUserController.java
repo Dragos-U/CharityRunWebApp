@@ -47,7 +47,7 @@ public class AppUserController {
     }
 
     @GetMapping("/registered/{eventId}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_PARTICIPANT','ROLE_ADMIN')")
     public ResponseEntity<List<RegistrationResponseDTO>> getRegisteredUsers(
             @PathVariable("eventId") Long eventId,
             @RequestParam("courseType") CourseType courseType,
@@ -60,7 +60,7 @@ public class AppUserController {
     }
 
     @GetMapping("/sorted/{eventId}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_PARTICIPANT','ROLE_ADMIN')")
     public ResponseEntity<List<RegistrationResponseDTO>> getSortedRegisteredUsers(
             @PathVariable Long eventId,
             @RequestParam String sortBy,
