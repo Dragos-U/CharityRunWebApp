@@ -3,7 +3,7 @@ package com.bearsoft.charityrun.controllers;
 import com.bearsoft.charityrun.models.domain.dtos.AuthenticationRequestDTO;
 import com.bearsoft.charityrun.models.domain.dtos.AuthenticationResponseDTO;
 import com.bearsoft.charityrun.models.domain.dtos.AppUserDTO;
-import com.bearsoft.charityrun.services.security.AuthenticationService;
+import com.bearsoft.charityrun.services.security.interfaces.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;

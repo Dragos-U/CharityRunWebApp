@@ -15,6 +15,7 @@ import com.bearsoft.charityrun.models.domain.enums.RoleType;
 import com.bearsoft.charityrun.models.validation.OnCreate;
 import com.bearsoft.charityrun.repositories.AppUserRepository;
 import com.bearsoft.charityrun.services.notifications.interfaces.EmailService;
+import com.bearsoft.charityrun.services.security.interfaces.AuthenticationService;
 import com.bearsoft.charityrun.validators.ObjectsValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,7 +40,7 @@ import java.util.Optional;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class AuthenticationService implements com.bearsoft.charityrun.services.security.interfaces.AuthenticationService {
+public class AuthenticationServiceImpl implements AuthenticationService {
 
     public static final String USERNAME_NOT_FOUND = "Username not found.";
     public static final String ERROR_DURING_EMAIL_SENDING = "Error during email sending.";
