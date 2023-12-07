@@ -1,5 +1,10 @@
 HELP.md
 src/main/resources/application.properties
+src/main/resources/application-dev.properties
+src/main/resources/application-prod.properties
+src/main/resources/keystore.p12
+tmp
+
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
@@ -7,6 +12,8 @@ target/
 mvnw
 mvnw.cmd
 docker-compose.yml
+Dockerfile
+appmap.yml
 
 ### STS ###
 .apt_generated
