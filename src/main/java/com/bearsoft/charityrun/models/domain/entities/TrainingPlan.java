@@ -18,6 +18,9 @@ public class TrainingPlan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "training_details", columnDefinition = "TEXT")
+    private String trainingDetails;
+
     @ManyToOne
     @JoinColumn(name="registration_id")
     @JsonBackReference("courseRegistration-trainingPlan")

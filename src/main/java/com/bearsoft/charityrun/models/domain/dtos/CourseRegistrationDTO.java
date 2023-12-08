@@ -25,4 +25,6 @@ public class CourseRegistrationDTO {
 
     @AgeValidation(minAge = 14, message = "Invalid age.")
     private int age;
+
+    private String trainingDetails;
 }

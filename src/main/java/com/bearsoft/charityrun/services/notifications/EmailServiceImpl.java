@@ -92,6 +92,26 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
+    @Override
+    public void sendTrainingPlanEmail(AppUser appUser, String subject, String openAiTrainingPlan) {
+        try {
+            String toEmail = appUser.getEmail();
+            String appUserDTOFirstName = appUser.getFirstName();
+            String eventName = appUser.getCourseRegistration().getCourse().getEvent().getName();
+            String htmlTemplateName ="trainingPlanEmailTemplate";
+
+            Context context = new Context();
+            context.setVariable("firstName", appUserDTOFirstName);
+            context.setVariable("openAiTrainingPlan", openAiTrainingPlan);
+            context.setVariable("eventName", eventName);
+
+            sendEmail(toEmail, subject, htmlTemplateName, context);
+        } catch (MessagingException e) {
+            log.info(String.format("Cannot send email."));
+            throw new EmailSendingException("Error during email sending.");
+        }
+    }
+
     private void sendEmail(
             String toEmail,
             String subject,

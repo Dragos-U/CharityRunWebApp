@@ -6,10 +6,7 @@ import com.bearsoft.charityrun.exceptions.courseregistration.CourseRegistrationA
 import com.bearsoft.charityrun.exceptions.courseregistration.CourseRegistrationNotFoundException;
 import com.bearsoft.charityrun.models.domain.dtos.AppUserDTO;
 import com.bearsoft.charityrun.models.domain.dtos.CourseRegistrationDTO;
-import com.bearsoft.charityrun.models.domain.entities.AppUser;
-import com.bearsoft.charityrun.models.domain.entities.Course;
-import com.bearsoft.charityrun.models.domain.entities.CourseRegistration;
-import com.bearsoft.charityrun.models.domain.entities.Role;
+import com.bearsoft.charityrun.models.domain.entities.*;
 import com.bearsoft.charityrun.models.domain.enums.CourseType;
 import com.bearsoft.charityrun.models.domain.enums.GenderType;
 import com.bearsoft.charityrun.models.domain.enums.RoleType;
@@ -29,6 +26,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -52,11 +50,19 @@ public class CourseRegistrationServiceImpl implements CourseRegistrationService 
         var appUser = securityAppUser.getAppUser();
         validateCourseRegistrationExistence(appUser);
 
+        var lastTrainingPlan = appUser.getCourseRegistration().getTrainingPlans().stream()
+                .sorted(Comparator.comparing(TrainingPlan::getId).reversed())
+                .findFirst()
+                .orElse(null);
+
+        String trainingDetails = (lastTrainingPlan != null) ? lastTrainingPlan.getTrainingDetails() : "No training plan available";
+
         return CourseRegistrationDTO.builder()
                 .courseType(appUser.getCourseRegistration().getCourse().getCourseType())
                 .tShirtSize(appUser.getCourseRegistration().getTShirtSize())
                 .gender(appUser.getCourseRegistration().getGender())
                 .age(appUser.getCourseRegistration().getAge())
+                .trainingDetails(trainingDetails)
                 .build();
     }
 

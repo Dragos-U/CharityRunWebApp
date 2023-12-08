@@ -10,4 +10,6 @@ public interface EmailService {
     void sendCourseRegistrationEmail(CourseRegistrationDTO courseRegistrationDTO, AppUser appUser, String subject);
     void sendCourseReminderEmail(AppUser appUser, String subject, long daysUntilCourse);
 
+    void sendTrainingPlanEmail(AppUser appUser, String subject, String openAiTrainingPlan);
+
 }

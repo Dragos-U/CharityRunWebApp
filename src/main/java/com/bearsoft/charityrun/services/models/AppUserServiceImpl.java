@@ -205,6 +205,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
             throw new InvalidUserAuthenticationException("Invalid user authentication");
         }
     }
+
     private void deleteAppUserCommon(AppUser appUser, String email) {
         try {
             appUserRepository.delete(appUser);
