@@ -31,7 +31,7 @@ public class CourseRegistration {
     @Enumerated(EnumType.STRING)
     private GenderType gender;
 
-    @OneToMany(mappedBy = "courseRegistration", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "courseRegistration", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonManagedReference("courseRegistration-trainingPlan")
     private List<TrainingPlan> trainingPlans;
 

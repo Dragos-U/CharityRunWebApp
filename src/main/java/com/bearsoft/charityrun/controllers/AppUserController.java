@@ -31,7 +31,6 @@ public class AppUserController {
     private final AppUserService appUserService;
     private final MessageSource messageSource;
 
-    @RateLimited
     @GetMapping("/me")
     @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
     public ResponseEntity<AppUserDTO> getLoggedAppUserData(Principal connectedAppUser) {

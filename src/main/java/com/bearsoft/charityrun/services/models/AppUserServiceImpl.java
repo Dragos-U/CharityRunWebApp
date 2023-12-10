@@ -10,6 +10,8 @@ import com.bearsoft.charityrun.models.domain.dtos.AppUserDTO;
 import com.bearsoft.charityrun.models.domain.dtos.ChangePasswordDTO;
 import com.bearsoft.charityrun.models.validation.OnUpdate;
 import com.bearsoft.charityrun.repositories.AppUserRepository;
+import com.bearsoft.charityrun.repositories.CourseRegistrationRepository;
+import com.bearsoft.charityrun.repositories.TrainingPlanRepository;
 import com.bearsoft.charityrun.services.models.interfaces.AppUserService;
 import com.bearsoft.charityrun.validators.ObjectsValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -188,7 +190,8 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
         if (!email.equals(appUser.getEmail())) {
             throw new EmailMatchingException("Email does not match the logged-in user");
         }
-        deleteAppUserCommon(appUser, email);
+        deleteAppUser(appUser);
+
     }
 
     @Override
@@ -197,7 +200,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
         AppUser appUser = appUserRepository.findAppUsersByEmail(email)
                 .orElseThrow(() -> new AppUserNotFoundException(String.format("User with email: %s not found", email)));
 
-        deleteAppUserCommon(appUser, email);
+        deleteAppUser(appUser);
     }
 
     private void checkConnectedUserAuthentication(Principal connectedAppUser) {
@@ -206,7 +209,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
         }
     }
 
-    private void deleteAppUserCommon(AppUser appUser, String email) {
+    private void deleteAppUser(AppUser appUser) {
         try {
             appUserRepository.delete(appUser);
         } catch (AppUserNotFoundException appUserNotFoundException) {

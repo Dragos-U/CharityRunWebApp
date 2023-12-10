@@ -1,5 +1,6 @@
 package com.bearsoft.charityrun.controllers;
 
+import com.bearsoft.charityrun.aspects.RateLimited;
 import com.bearsoft.charityrun.models.domain.dtos.OpenAiRequestDTO;
 import com.bearsoft.charityrun.services.models.interfaces.TrainingPlanGeneratorService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,6 +20,7 @@ public class TrainingPlanController {
 
     private final TrainingPlanGeneratorService trainingPlanGeneratorService;
 
+    @RateLimited
     @PostMapping
     @PreAuthorize("hasRole('ROLE_PARTICIPANT')")
     public ResponseEntity<String> createTrainingPlan(

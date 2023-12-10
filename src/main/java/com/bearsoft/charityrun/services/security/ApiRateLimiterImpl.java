@@ -19,7 +19,7 @@ public class ApiRateLimiterImpl implements ApiRateLimiter {
     }
 
     private final ConcurrentHashMap<String, ClientRequestInfo> requestCounts = new ConcurrentHashMap<>();
-    private static final int MAX_REQUESTS_PER_MINUTE = 10;
+    private static final int MAX_REQUESTS_PER_MINUTE = 1;
 
     @Override
     public synchronized boolean isLimitExceeded(String clientIp) {

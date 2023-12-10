@@ -84,7 +84,7 @@ public class TrainingPlanGeneratorServiceImpl implements TrainingPlanGeneratorSe
                 "5. Tapering strategy for the final weeks leading up to the event, " +
                 "6. Any additional tips for improving endurance and performance specific to the course type." +
                 "All suggested running distances should be in kilometers." +
-                "Remove the word Certainly! from the very beginning of your response.";
+                "Remove the word Certainly and sure from the very beginning of your response.";
     }
 
     private String extractContentFromResponse(String jsonResponse) {

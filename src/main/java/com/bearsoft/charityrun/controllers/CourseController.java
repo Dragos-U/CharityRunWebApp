@@ -31,7 +31,7 @@ public class CourseController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_PARTICIPANT')")
+    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_PARTICIPANT','ROLE_ADMIN')")
     public ResponseEntity<List<CourseDTO>> getAllCourses(
             @RequestParam(required = false, defaultValue = "1") Long eventID
     ) {
